@@ -1,13 +1,19 @@
 package com.silvertree.ideplugin.common;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IAdaptable;
 
 abstract class DeviceTreeObject implements IAdaptable{
 	
 	private String _name;
-	private int _fromOffset;
-	private int _toOffset;
+	private int _fromTextOffset;
+	private int _toTextOffset;
 	private DeviceTreeObject parent;
+	private ArrayList<Integer> _regs;
+	private int _addressCells;
+	private int _sizeCells;
+	
 	enum DeviceTreeType{
 		NONE,
 		TREE,
@@ -32,19 +38,19 @@ abstract class DeviceTreeObject implements IAdaptable{
 	}
 	
 	public int getFromOffset() {
-		return _fromOffset;
+		return _fromTextOffset;
 	}
 	
 	public void setFromOffset(int fromOffset) {
-		_fromOffset = fromOffset;
+		_fromTextOffset = fromOffset;
 	}
 	
 	public int getToOffset() {
-		return _toOffset;
+		return _toTextOffset;
 	}
 	
 	public void setToOffset(int toOffset) {
-		_toOffset = toOffset;
+		_toTextOffset = toOffset;
 	}
 	
 	DeviceTreeType getType() {
@@ -72,6 +78,48 @@ abstract class DeviceTreeObject implements IAdaptable{
 	public <T> T getAdapter(Class<T> adapter) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * @return the _addressCells
+	 */
+	public int getAddressCells() {
+		return _addressCells;
+	}
+
+	/**
+	 * @param _addressCells the _addressCells to set
+	 */
+	public void setAddressCells(int _addressCells) {
+		this._addressCells = _addressCells;
+	}
+
+	/**
+	 * @return the _sizeCells
+	 */
+	public int getSizeCells() {
+		return _sizeCells;
+	}
+
+	/**
+	 * @param _sizeCells the _sizeCells to set
+	 */
+	public void setSizeCells(int _sizeCells) {
+		this._sizeCells = _sizeCells;
+	}
+
+	/**
+	 * @return the _regs
+	 */
+	public ArrayList<Integer> getRegs() {
+		return _regs;
+	}
+
+	/**
+	 * @param _regs the _regs to set
+	 */
+	public void setRegs(ArrayList<Integer> _regs) {
+		this._regs = _regs;
 	}
 
 }

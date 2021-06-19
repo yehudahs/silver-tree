@@ -32,14 +32,14 @@ public class DeviceTree extends DeviceTreeObject{
 				return;
 			}else if(nextSentenceEndPos != -1 &&  nextDeviceTreeStartPos == -1) {
 				// we have another sentence
-				currPos = addSentence(currPos, nextSentenceEndPos);
+				currPos = addAttribute(currPos, nextSentenceEndPos);
 			}else if (nextSentenceEndPos == -1 && nextDeviceTreeStartPos != -1) {
 				// we have found a device tree. find matching brackets
 				currPos = addDeviceTree(currPos);
 			} else if (nextSentenceEndPos != -1 && nextDeviceTreeStartPos != -1) {
 				// if we find that we have more sentences and device trees - find who is closer.
 				if (nextSentenceEndPos < nextDeviceTreeStartPos) {
-					currPos = addSentence(currPos, nextSentenceEndPos);
+					currPos = addAttribute(currPos, nextSentenceEndPos);
 				}else {
 					currPos = addDeviceTree(currPos);
 				}
@@ -64,8 +64,8 @@ public class DeviceTree extends DeviceTreeObject{
 	}
 
 
-	private int addSentence(int currPos, int nextSentenceEndPos) {
-		Sentence s = new Sentence(deviceTree.substring(currPos, nextSentenceEndPos));
+	private int addAttribute(int currPos, int nextSentenceEndPos) {
+		Attribute s = new Attribute(deviceTree.substring(currPos, nextSentenceEndPos));
 		addChild(s);
 		currPos = nextSentenceEndPos + 1;
 		return currPos;

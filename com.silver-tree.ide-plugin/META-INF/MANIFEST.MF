@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ide-plugin
+Bundle-SymbolicName: com.silver-tree.ide-plugin;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.silver_tree.ide_plugin.Activator
+Bundle-Vendor: SILVER-TREE
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.ide;bundle-version="3.17.200",
+ org.eclipse.core.resources;bundle-version="3.13.800",
+ org.eclipse.ui.editors;bundle-version="3.13.300",
+ org.eclipse.jface.text;bundle-version="3.16.400"
+Bundle-RequiredExecutionEnvironment: JavaSE-13
+Automatic-Module-Name: com.silver.tree.ide.plugin
+Import-Package: javax.inject
+Bundle-ActivationPolicy: lazy

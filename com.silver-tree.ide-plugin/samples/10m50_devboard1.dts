@@ -1,0 +1,231 @@
+/dts-v1/;
+
+/ {
+	model = "Altera NiosII Max10";
+	compatible = "altr,niosii-max10";
+	#address-cells = <0x1>;
+	#size-cells = <0x1>;
+
+	cpus {
+		#address-cells = <0x1>;
+		#size-cells = <0x0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "altr,nios2-1.1";
+			reg = <0x0>;
+			interrupt-controller;
+			#interrupt-cells = <0x1>;
+			altr,exception-addr = <0xc8000120>;
+			altr,fast-tlb-miss-addr = <0xc0000100>;
+			altr,has-div = <0x1>;
+			altr,has-initda = <0x1>;
+			altr,has-mmu = <0x1>;
+			altr,has-mul = <0x1>;
+			altr,implementation = "fast";
+			altr,pid-num-bits = <0x8>;
+			altr,reset-addr = <0xd4000000>;
+			altr,tlb-num-entries = <0x100>;
+			altr,tlb-num-ways = <0x10>;
+			altr,tlb-ptr-sz = <0x8>;
+			clock-frequency = <0x47868c0>;
+			dcache-line-size = <0x20>;
+			dcache-size = <0x8000>;
+			icache-line-size = <0x20>;
+			icache-size = <0x8000>;
+			phandle = <0x1>;
+		};
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x8000000 0x8000000 0x0 0x400>;
+	};
+
+	sopc@0 {
+		device_type = "soc";
+		ranges;
+		#address-cells = <0x1>;
+		#size-cells = <0x1>;
+		compatible = "altr,avalon", "simple-bus";
+		bus-frequency = <0x47868c0>;
+
+		serial@18001530 {
+			compatible = "altr,juart-1.0";
+			reg = <0x18001530 0x8>;
+			interrupt-parent = <0x1>;
+			interrupts = <0x7>;
+		};
+
+		serial@18001600 {
+			compatible = "altr,16550-FIFO32", "ns16550a";
+			reg = <0x18001600 0x200>;
+			interrupt-parent = <0x1>;
+			interrupts = <0x1>;
+			auto-flow-control = <0x1>;
+			clock-frequency = <0x2faf080>;
+			fifo-size = <0x20>;
+			reg-io-width = <0x4>;
+			reg-shift = <0x2>;
+			tx-threshold = <0x10>;
+		};
+
+		sysid@18001528 {
+			compatible = "altr,sysid-1.0";
+			reg = <0x18001528 0x8>;
+			id = <0xfacecafe>;
+			timestamp = <0x55500bea>;
+		};
+
+		ethernet@400 {
+			compatible = "altr,tse-msgdma-1.0", "altr,tse-1.0";
+			reg = <0x400 0x400 0x820 0x20 0x800 0x20 0x8c0 0x8 0x840 0x20 0x860 0x20>;
+			reg-names = "control_port", "rx_csr", "rx_desc", "rx_resp", "tx_csr", "tx_desc";
+			interrupt-parent = <0x1>;
+			interrupts = <0x2 0x3>;
+			interrupt-names = "rx_irq", "tx_irq";
+			rx-fifo-depth = <0x2000>;
+			tx-fifo-depth = <0x2000>;
+			address-bits = <0x30>;
+			max-frame-size = <0x5ee>;
+			local-mac-address = [00 00 00 00 00 00];
+			altr,has-supplementary-unicast;
+			altr,enable-sup-addr = <0x1>;
+			altr,has-hash-multicast-filter;
+			altr,enable-hash = <0x1>;
+			phy-mode = "rgmii-id";
+			phy-handle = <0x2>;
+
+			mdio {
+				compatible = "altr,tse-mdio";
+				#address-cells = <0x1>;
+				#size-cells = <0x0>;
+
+				ethernet-phy@0 {
+					reg = <0x0>;
+					device_type = "ethernet-phy";
+					phandle = <0x2>;
+				};
+			};
+		};
+
+		clock@0 {
+			compatible = "altr,pll-1.0";
+			#clock-cells = <0x1>;
+
+			enet_pll_c0 {
+				compatible = "fixed-clock";
+				#clock-cells = <0x0>;
+				clock-frequency = <0x7735940>;
+				clock-output-names = "enet_pll-c0";
+			};
+
+			enet_pll_c1 {
+				compatible = "fixed-clock";
+				#clock-cells = <0x0>;
+				clock-frequency = <0x17d7840>;
+				clock-output-names = "enet_pll-c1";
+			};
+
+			enet_pll_c2 {
+				compatible = "fixed-clock";
+				#clock-cells = <0x0>;
+				clock-frequency = <0x2625a0>;
+				clock-output-names = "enet_pll-c2";
+			};
+		};
+
+		clock@1 {
+			compatible = "altr,pll-1.0";
+			#clock-cells = <0x1>;
+
+			sys_pll_c0 {
+				compatible = "fixed-clock";
+				#clock-cells = <0x0>;
+				clock-frequency = <0x5f5e100>;
+				clock-output-names = "sys_pll-c0";
+			};
+
+			sys_pll_c1 {
+				compatible = "fixed-clock";
+				#clock-cells = <0x0>;
+				clock-frequency = <0x2faf080>;
+				clock-output-names = "sys_pll-c1";
+			};
+
+			sys_pll_c2 {
+				compatible = "fixed-clock";
+				#clock-cells = <0x0>;
+				clock-frequency = <0x47868c0>;
+				clock-output-names = "sys_pll-c2";
+			};
+		};
+
+		timer@18001440 {
+			compatible = "altr,timer-1.0";
+			reg = <0x18001440 0x20>;
+			interrupt-parent = <0x1>;
+			interrupts = <0x0>;
+			clock-frequency = <0x47868c0>;
+		};
+
+		gpio@180014d0 {
+			compatible = "altr,pio-1.0";
+			reg = <0x180014d0 0x10>;
+			altr,ngpio = <0x4>;
+			#gpio-cells = <0x2>;
+			gpio-controller;
+			phandle = <0x3>;
+		};
+
+		gpio@180014c0 {
+			compatible = "altr,pio-1.0";
+			reg = <0x180014c0 0x10>;
+			interrupt-parent = <0x1>;
+			interrupts = <0x6>;
+			altr,ngpio = <0x3>;
+			altr,interrupt-type = <0x2>;
+			edge_type = <0x1>;
+			level_trigger = <0x0>;
+			#gpio-cells = <0x2>;
+			gpio-controller;
+		};
+
+		timer@880 {
+			compatible = "altr,timer-1.0";
+			reg = <0x880 0x20>;
+			interrupt-parent = <0x1>;
+			interrupts = <0x5>;
+			clock-frequency = <0x47868c0>;
+		};
+
+		leds {
+			compatible = "gpio-leds";
+
+			fpga0 {
+				label = "fpga_led0";
+				gpios = <0x3 0x0 0x1>;
+			};
+
+			fpga1 {
+				label = "fpga_led1";
+				gpios = <0x3 0x1 0x1>;
+			};
+
+			fpga2 {
+				label = "fpga_led2";
+				gpios = <0x3 0x2 0x1>;
+			};
+
+			fpga3 {
+				label = "fpga_led3";
+				gpios = <0x3 0x3 0x1>;
+			};
+		};
+	};
+
+	chosen {
+		bootargs = "debug earlycon console=ttyS0,115200";
+		stdout-path = "/sopc@0/serial@18001600";
+	};
+};

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Device Tree"
+            id="com.silver-tree.ide-plugin">
+      </category>
+      <view
+            id="com.silvertree.ideplugin.views.DeviceTreeView"
+            name="Device Tree View"
+            icon="icons/sample.png"
+            class="com.silvertree.ideplugin.views.DeviceTreeView"
+            category="com.silver-tree.ide-plugin"
+            inject="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.silvertree.ideplugin.editors.DeviceTreeEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="dts"
+            icon="icons/sample.png"
+            id="com.silvertree.ideplugin.editors.DeviceTreeEditor"
+            name="Device Tree Editor">
+      </editor>
+   </extension>
+
+</plugin>

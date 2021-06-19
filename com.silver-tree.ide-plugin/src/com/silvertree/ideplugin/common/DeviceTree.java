@@ -65,7 +65,7 @@ public class DeviceTree extends DeviceTreeObject{
 
 
 	private int addAttribute(int currPos, int nextSentenceEndPos) {
-		Attribute s = new Attribute(deviceTree.substring(currPos, nextSentenceEndPos));
+		DeviceTreeAttribute s = new DeviceTreeAttribute(deviceTree.substring(currPos, nextSentenceEndPos));
 		addChild(s);
 		currPos = nextSentenceEndPos + 1;
 		return currPos;
@@ -105,5 +105,37 @@ public class DeviceTree extends DeviceTreeObject{
 	public boolean hasChildren() {
 		return children.size()>0;
 	}
-
+	
+	@Override
+	public int getAddressCells() {
+		if (isAddressCellsExists()) {
+			return super.getAddressCells();
+		}else {
+			DeviceTreeObject parent = getParent();
+			while (parent != null && !parent.isAddressCellsExists()) {
+				parent = parent.getParent();
+			}
+			if (parent != null)
+				return parent.getAddressCells();
+			else
+				return super.getAddressCells();
+			
+		}
+	}
+	
+	@Override
+	public int getSizeCells() {
+		if (isSizeCellsExists()) {
+			return super.getSizeCells();	
+		}else {
+			DeviceTreeObject parent = getParent();
+			while (parent != null && !parent.isSizeCellsExists()) {
+				parent = parent.getParent();
+			}
+			if (parent != null)
+				return parent.getSizeCells();
+			else
+				return super.getSizeCells();
+		}
+	}
 }

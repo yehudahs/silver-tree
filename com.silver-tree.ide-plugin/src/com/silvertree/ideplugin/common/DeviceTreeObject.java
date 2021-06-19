@@ -9,10 +9,10 @@ abstract class DeviceTreeObject implements IAdaptable{
 	private String _name;
 	private int _fromTextOffset;
 	private int _toTextOffset;
-	private DeviceTreeObject parent;
+	private DeviceTreeObject parent = null;
 	private ArrayList<Integer> _regs;
-	private int _addressCells;
-	private int _sizeCells;
+	private int _addressCells = -1;
+	private int _sizeCells = -1;
 	
 	enum DeviceTreeType{
 		NONE,
@@ -94,6 +94,10 @@ abstract class DeviceTreeObject implements IAdaptable{
 		this._addressCells = _addressCells;
 	}
 
+	public Boolean isAddressCellsExists() {
+		return _addressCells != -1;
+	}
+	
 	/**
 	 * @return the _sizeCells
 	 */
@@ -106,6 +110,10 @@ abstract class DeviceTreeObject implements IAdaptable{
 	 */
 	public void setSizeCells(int _sizeCells) {
 		this._sizeCells = _sizeCells;
+	}
+	
+	public Boolean isSizeCellsExists() {
+		return _sizeCells != -1;
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.silvertree.ideplugin.views;
 
 import java.io.BufferedReader;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +15,7 @@ import org.eclipse.ui.part.*;
 
 import com.silvertree.ideplugin.common.DeviceTree;
 import com.silvertree.ideplugin.common.DeviceTreeRoot;
+import com.silvertree.ideplugin.common.Token;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
 
 import org.eclipse.jface.viewers.*;
@@ -71,7 +73,7 @@ public class DeviceTreeView extends ViewPart {
 	private Action doubleClickAction;
 	 
 	class ViewContentProvider implements ITreeContentProvider {
-		private DeviceTreeRoot invisibleRoot;
+		private DeviceTree invisibleRoot;
 		private String _content;
 		
 		public ViewContentProvider(String content) {
@@ -82,7 +84,8 @@ public class DeviceTreeView extends ViewPart {
 			if (parent.equals(getViewSite())) {
 				if (invisibleRoot==null) {
 					try {
-						invisibleRoot = new DeviceTreeRoot(_content);
+						Token tok = new Token(_content, 0, _content.length(), Token.TokenType.TREE);
+						invisibleRoot = new DeviceTreeRoot(tok);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

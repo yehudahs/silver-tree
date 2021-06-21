@@ -6,61 +6,28 @@ import org.eclipse.core.runtime.IAdaptable;
 
 abstract class DeviceTreeObject implements IAdaptable{
 	
-	private String _name;
-	private int _fromTextOffset;
-	private int _toTextOffset;
+	private String _key;
+	private String _value;
 	private DeviceTreeObject parent = null;
 	private ArrayList<Integer> _regs;
 	private int _addressCells = -1;
 	private int _sizeCells = -1;
 	
-	enum DeviceTreeType{
-		NONE,
-		TREE,
-		SINGLE_LINE_ATTRIBUTE,
-		KEY_STRING_ATTRIBUTE,
-		KEY_INT_ATTRIBUTE,
-		INCLUDE,
-		
-	}
-	DeviceTreeType _type;
+	private Token _token;
 	
 	public abstract void parse() throws Exception;
 	
-	public String getName() {
-		return _name;
+	public String getKey() {
+		return _key;
 	}
 	
-	public void setName(String name) {
-		_name = null;
+	public void setKey(String name) {
+		_key = null;
 		if (name != null)
-			_name = name.trim();
+			_key = name.trim();
 	}
 	
-	public int getFromOffset() {
-		return _fromTextOffset;
-	}
-	
-	public void setFromOffset(int fromOffset) {
-		_fromTextOffset = fromOffset;
-	}
-	
-	public int getToOffset() {
-		return _toTextOffset;
-	}
-	
-	public void setToOffset(int toOffset) {
-		_toTextOffset = toOffset;
-	}
-	
-	DeviceTreeType getType() {
-		return _type;
-	}
-	
-	void setType(DeviceTreeType type) {
-		_type = type;
-	}
-	
+
 	public void setParent(DeviceTreeObject parent) {
 		this.parent = parent;
 	}
@@ -71,7 +38,11 @@ abstract class DeviceTreeObject implements IAdaptable{
 	
 	@Override
 	public String toString() {
-		return getName();
+		String res = getKey();
+		if (getValue() != null) {
+			res += ":" + getValue();
+		}
+		return res;
 	}
 	
 	@Override
@@ -128,6 +99,34 @@ abstract class DeviceTreeObject implements IAdaptable{
 	 */
 	public void setRegs(ArrayList<Integer> _regs) {
 		this._regs = _regs;
+	}
+
+	/**
+	 * @return the _token
+	 */
+	public Token getToken() {
+		return _token;
+	}
+
+	/**
+	 * @param _token the _token to set
+	 */
+	public void setToken(Token _token) {
+		this._token = _token;
+	}
+
+	/**
+	 * @return the _value
+	 */
+	public String getValue() {
+		return _value;
+	}
+
+	/**
+	 * @param _value the _value to set
+	 */
+	public void setValue(String _value) {
+		this._value = _value;
 	}
 
 }

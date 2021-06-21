@@ -1,16 +1,15 @@
 package com.silvertree.ideplugin.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DeviceTree extends DeviceTreeObject{
 	
-	private String deviceTree;
 	public ArrayList<DeviceTreeObject> children;
 	
-	public DeviceTree(String text) throws Exception {
-		deviceTree = text;
-		setName(null);
-		setType(DeviceTreeType.TREE);
+	public DeviceTree(Token tok) throws Exception {
+		setToken(tok);
+		getToken().setType(Token.TokenType.TREE);
 		children = new ArrayList<DeviceTreeObject>();
 		parse();
 	}
@@ -18,57 +17,125 @@ public class DeviceTree extends DeviceTreeObject{
 
 	@Override
 	public void parse() throws Exception {
-		if (deviceTree == null) return;
+		if (getToken() == null) return;
 		
-		int textLength = deviceTree.length();
+		int textLength = getToken().toString().length();
 		int currPos = 0;
-		while(currPos != textLength) {
-			//check if the next token is Sentence or DeviceTree
-			int nextSentenceEndPos = deviceTree.indexOf(";", currPos);
-			int nextDeviceTreeStartPos = deviceTree.indexOf("{", currPos);
+		while(currPos < textLength) {
 			
-			//if there is no more sentences and no more DeviceTree - we have finished the parsing and return.
-			if (nextSentenceEndPos == -1 && nextDeviceTreeStartPos == -1) {
-				return;
-			}else if(nextSentenceEndPos != -1 &&  nextDeviceTreeStartPos == -1) {
-				// we have another sentence
-				currPos = addAttribute(currPos, nextSentenceEndPos);
-			}else if (nextSentenceEndPos == -1 && nextDeviceTreeStartPos != -1) {
-				// we have found a device tree. find matching brackets
-				currPos = addDeviceTree(currPos);
-			} else if (nextSentenceEndPos != -1 && nextDeviceTreeStartPos != -1) {
-				// if we find that we have more sentences and device trees - find who is closer.
-				if (nextSentenceEndPos < nextDeviceTreeStartPos) {
-					currPos = addAttribute(currPos, nextSentenceEndPos);
-				}else {
-					currPos = addDeviceTree(currPos);
-				}
-			} else {
-				throw new Exception("Error parsing tree");
+			// skip white spaces
+			if (getToken().toString().charAt(currPos) == ' '
+					|| getToken().toString().charAt(currPos) == '\n'
+					|| getToken().toString().charAt(currPos) == '\t'
+					|| getToken().toString().charAt(currPos) == '\r') {
+				currPos++;
+				continue;
 			}
+			
+			// get the next token.
+			Token tok = getNextToken(currPos);
+			System.out.println("found: " + tok.getType());
+			switch(tok.getType()) {
+			case ATTRIBUTE:
+				DeviceTreeAttribute s = new DeviceTreeAttribute(tok);
+				addChild(s);
+				currPos = tok.getToOffset() + 1;
+				break;
+			case TREE:
+				DeviceTree t = new DeviceTree(tok);
+				t.setKey(getToken().toString().substring(currPos, getToken().toString().indexOf("{", currPos)));				
+				addChild(t);
+				
+				// jump over the closing "}"
+				currPos = tok.getToOffset() + 1;
+				// jump over the closing ";"
+				currPos = getToken().toString().indexOf(";", currPos) + 1;
+				break;
+			default:
+				currPos = tok.getToOffset() + 1;
+				break;
+			
+			}
+			
 		}
 	}
+	
+	private Token getNextToken(int startPos) {
+		ArrayList<Token> nextTokens = new ArrayList<Token>();
+		nextTokens.add(getNextAttributePos(startPos));
+		nextTokens.add(getNextDeviceTreePos(startPos));
+		nextTokens.add(getNextSingleLineCommentPos(startPos));
+		nextTokens.add(getNextMultiLineCommentPos(startPos));
+		nextTokens.add(getNextIncludePos(startPos));
+		Token nextToken = Collections.min(nextTokens);
+		return nextToken;
+	}
+	
+	
+	/**
+	 * @param currPos
+	 */
+	private Token getNextMultiLineCommentPos(int currPos) {
+		int multiCommentStartPos = getToken().toString().indexOf("/*", currPos);
+		if (multiCommentStartPos == -1)
+			return new Token();
+		int multiCommentEndPos = getToken().toString().indexOf("*/", multiCommentStartPos) + 2;
+		Token tok = new Token(getToken().toString(), multiCommentStartPos, multiCommentEndPos, Token.TokenType.COMMENT);
+		return tok;
+	}
 
-
-	private int addDeviceTree(int from) throws Exception {
-		int nextDeviceTreeStartPos = deviceTree.indexOf("{", from);
-		int nextDeviceTreeEndPos = findClosingBrackets(deviceTree, nextDeviceTreeStartPos);
-		DeviceTree t = new DeviceTree(deviceTree.substring(nextDeviceTreeStartPos+1, nextDeviceTreeEndPos));
-		String treeName = deviceTree.substring(from, nextDeviceTreeStartPos);
-		treeName = treeName.replaceAll("\\s+", ""); // remove all white spaces
-		t.setName(treeName);
-		addChild(t);
-		from = nextDeviceTreeEndPos;
-		from += 2;
-		return from;
+	/**
+	 * @param currPos
+	 */
+	private Token getNextSingleLineCommentPos(int currPos) {
+		int singleCommentStartPos = getToken().toString().indexOf("//", currPos);
+		if (singleCommentStartPos == -1)
+			return new Token();
+		int endOfLinePos = getToken().toString().indexOf("\n", currPos);
+		Token tok = new Token(getToken().toString(), singleCommentStartPos, endOfLinePos, Token.TokenType.COMMENT);
+		return tok;
+	}
+	
+	private Token getNextIncludePos(int currPos) {
+		int includeStartPos = getToken().toString().indexOf("#include", currPos);
+		if (includeStartPos == -1)
+			return new Token();
+		int endOfLinePos = getToken().toString().indexOf("\n", includeStartPos);
+		Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, Token.TokenType.INCLUDE);
+		return tok;
 	}
 
 
-	private int addAttribute(int currPos, int nextSentenceEndPos) {
-		DeviceTreeAttribute s = new DeviceTreeAttribute(deviceTree.substring(currPos, nextSentenceEndPos));
-		addChild(s);
-		currPos = nextSentenceEndPos + 1;
-		return currPos;
+	/**
+	 * @param currPos
+	 * @return
+	 */
+	private Token getNextDeviceTreePos(int currPos) {
+		int deviceTreeStartPos = getToken().toString().indexOf("{", currPos);
+		if (deviceTreeStartPos == -1)
+			return new Token();
+		
+		// because we are identifing trees when we see {, we can't add the { char into the next tree.
+		// it will cause an endless loop...
+		deviceTreeStartPos += 1;
+		
+		//need to find the ending "}"
+		int deviceTreeEndPos = findClosingBrackets(getToken().toString(), deviceTreeStartPos);
+		Token tok = new Token(getToken().toString(), deviceTreeStartPos, deviceTreeEndPos, Token.TokenType.TREE);
+		return tok;
+	}
+
+
+	/**
+	 * @param currPos
+	 * @return
+	 */
+	private Token getNextAttributePos(int currPos) {
+		int attributeEndPos = getToken().toString().indexOf(";", currPos);
+		if (attributeEndPos == -1)
+			return new Token();
+		Token tok = new Token(getToken().toString(), currPos, attributeEndPos+1, Token.TokenType.ATTRIBUTE);
+		return tok;
 	}
 	
 	private int findClosingBrackets(String text, int openPos) {

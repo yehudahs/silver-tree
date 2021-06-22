@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources;bundle-version="3.13.800",
  org.eclipse.ui.editors;bundle-version="3.13.300",
  org.eclipse.jface.text;bundle-version="3.16.400"
-Bundle-RequiredExecutionEnvironment: JavaSE-13
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: com.silver.tree.ide.plugin
 Import-Package: javax.inject
 Bundle-ActivationPolicy: lazy

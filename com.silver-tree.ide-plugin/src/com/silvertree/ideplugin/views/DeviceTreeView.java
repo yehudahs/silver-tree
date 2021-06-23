@@ -82,7 +82,7 @@ public class DeviceTreeView extends ViewPart {
 
 		public Object[] getElements(Object parent) {
 			if (parent.equals(getViewSite())) {
-				if (invisibleRoot==null) {
+				if (invisibleRoot==null && _content != null) {
 					try {
 						Token tok = new Token(_content, 0, _content.length(), Token.TokenType.TREE);
 						invisibleRoot = new DeviceTreeRoot(tok);

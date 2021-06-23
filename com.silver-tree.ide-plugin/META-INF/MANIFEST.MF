@@ -7,10 +7,10 @@ Bundle-Activator: com.silver_tree.ide_plugin.Activator
 Bundle-Vendor: SILVER-TREE
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.ui.ide;bundle-version="3.17.200",
- org.eclipse.core.resources;bundle-version="3.13.800",
- org.eclipse.ui.editors;bundle-version="3.13.300",
- org.eclipse.jface.text;bundle-version="3.16.400"
+ org.eclipse.ui.ide;bundle-version="3.18.100",
+ org.eclipse.core.resources;bundle-version="3.14.0",
+ org.eclipse.ui.editors;bundle-version="3.14.0",
+ org.eclipse.jface.text;bundle-version="3.17.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: com.silver.tree.ide.plugin
 Import-Package: javax.inject

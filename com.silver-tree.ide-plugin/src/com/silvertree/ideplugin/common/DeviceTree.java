@@ -34,7 +34,6 @@ public class DeviceTree extends DeviceTreeObject{
 			
 			// get the next token.
 			Token tok = getNextToken(currPos);
-			System.out.println("found: " + tok.getType());
 			switch(tok.getType()) {
 			case ATTRIBUTE:
 				DeviceTreeAttribute s = new DeviceTreeAttribute(tok);
@@ -205,4 +204,17 @@ public class DeviceTree extends DeviceTreeObject{
 				return super.getSizeCells();
 		}
 	}
+
+
+	@Override
+	public String dump() {
+        var dumpString = getKey() + "{\n";
+		for (DeviceTreeObject ob : children) {
+			var child = ob.dump();
+			if (child != null)
+				dumpString += child;
+		}
+		dumpString += "};\n";
+		return dumpString;
+    }
 }

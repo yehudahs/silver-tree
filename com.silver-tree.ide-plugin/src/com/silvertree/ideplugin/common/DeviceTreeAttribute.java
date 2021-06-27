@@ -49,4 +49,16 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 			getParent().setSizeCells(getSizeCells());
 		}
 	}
+
+	@Override
+	public String dump() {
+		if (getToken().getType() == Token.TokenType.COMMENT)
+			return null;
+		
+		var dumpString = getKey();
+		if (getValue() != null)
+			dumpString += " = " + getValue();
+		
+		return dumpString;
+	}
 }

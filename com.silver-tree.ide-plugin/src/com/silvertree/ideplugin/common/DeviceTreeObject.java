@@ -16,6 +16,7 @@ abstract class DeviceTreeObject implements IAdaptable{
 	private Token _token;
 	
 	public abstract void parse() throws Exception;
+	public abstract String dump(); 
 	
 	public String getKey() {
 		return _key;

@@ -6,6 +6,8 @@ import org.eclipse.core.runtime.IAdaptable;
 
 abstract class DeviceTreeObject implements IAdaptable{
 	
+	private static int deviceTreeCount = 0;
+	private int _deviceTreeId;
 	private String _key;
 	private String _value;
 	private DeviceTreeObject parent = null;
@@ -17,6 +19,15 @@ abstract class DeviceTreeObject implements IAdaptable{
 	
 	public abstract void parse() throws Exception;
 	public abstract String dump(); 
+	
+	public DeviceTreeObject() {
+		_deviceTreeId = deviceTreeCount;
+		deviceTreeCount++;
+	}
+	
+	public int getID() {
+		return _deviceTreeId;
+	}
 	
 	public String getKey() {
 		return _key;

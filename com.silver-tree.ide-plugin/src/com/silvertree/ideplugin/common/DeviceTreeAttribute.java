@@ -3,6 +3,7 @@ package com.silvertree.ideplugin.common;
 public class DeviceTreeAttribute extends DeviceTreeObject {
 	
 	public DeviceTreeAttribute(Token tok) {
+		super();
 		setToken(tok);
 		parse();
 	}

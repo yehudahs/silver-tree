@@ -8,6 +8,7 @@ public class DeviceTree extends DeviceTreeObject{
 	public ArrayList<DeviceTreeObject> children;
 	
 	public DeviceTree(Token tok) throws Exception {
+		super();
 		setToken(tok);
 		getToken().setType(Token.TokenType.TREE);
 		children = new ArrayList<DeviceTreeObject>();
@@ -21,6 +22,7 @@ public class DeviceTree extends DeviceTreeObject{
 		
 		int textLength = getToken().toString().length();
 		int currPos = 0;
+		int iteration = 0;
 		while(currPos < textLength) {
 			
 			// skip white spaces
@@ -56,15 +58,23 @@ public class DeviceTree extends DeviceTreeObject{
 			
 			}
 			
+			iteration++;
 		}
 	}
 	
 	private Token getNextToken(int startPos) {
+		//check if we have comments
+		Token singleCommentTok = getNextSingleLineCommentPos(startPos);
+		if (!singleCommentTok.isEmpty())
+			return singleCommentTok;
+		
+		Token multiLineTok = getNextMultiLineCommentPos(startPos);
+		if (! multiLineTok.isEmpty())
+			return multiLineTok;
+		
 		ArrayList<Token> nextTokens = new ArrayList<Token>();
 		nextTokens.add(getNextAttributePos(startPos));
 		nextTokens.add(getNextDeviceTreePos(startPos));
-		nextTokens.add(getNextSingleLineCommentPos(startPos));
-		nextTokens.add(getNextMultiLineCommentPos(startPos));
 		nextTokens.add(getNextIncludePos(startPos));
 		Token nextToken = Collections.min(nextTokens);
 		return nextToken;
@@ -75,11 +85,13 @@ public class DeviceTree extends DeviceTreeObject{
 	 * @param currPos
 	 */
 	private Token getNextMultiLineCommentPos(int currPos) {
-		int multiCommentStartPos = getToken().toString().indexOf("/*", currPos);
-		if (multiCommentStartPos == -1)
+
+		if (! getToken().toString().substring(currPos).startsWith("/*")) {
 			return new Token();
-		int multiCommentEndPos = getToken().toString().indexOf("*/", multiCommentStartPos) + 2;
-		Token tok = new Token(getToken().toString(), multiCommentStartPos, multiCommentEndPos, Token.TokenType.COMMENT);
+		}
+		
+		int multiCommentEndPos = getToken().toString().indexOf("*/", currPos) + 2;
+		Token tok = new Token(getToken().toString(), currPos, multiCommentEndPos, Token.TokenType.COMMENT);
 		return tok;
 	}
 
@@ -87,11 +99,12 @@ public class DeviceTree extends DeviceTreeObject{
 	 * @param currPos
 	 */
 	private Token getNextSingleLineCommentPos(int currPos) {
-		int singleCommentStartPos = getToken().toString().indexOf("//", currPos);
-		if (singleCommentStartPos == -1)
+		if (! getToken().toString().substring(currPos).startsWith("//")) {
 			return new Token();
+		}
+
 		int endOfLinePos = getToken().toString().indexOf("\n", currPos);
-		Token tok = new Token(getToken().toString(), singleCommentStartPos, endOfLinePos, Token.TokenType.COMMENT);
+		Token tok = new Token(getToken().toString(), currPos, endOfLinePos, Token.TokenType.COMMENT);
 		return tok;
 	}
 	

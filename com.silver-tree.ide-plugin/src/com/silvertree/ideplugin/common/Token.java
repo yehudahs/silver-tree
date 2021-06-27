@@ -9,6 +9,8 @@ package com.silvertree.ideplugin.common;
  */
 public class Token implements Comparable<Token> {
 	
+	private static int tokCount = 0;
+	private Integer _tokId;
 	private String _text;
 	private Integer _fromTextOffset;
 	private Integer _toTextOffset;
@@ -39,10 +41,16 @@ public class Token implements Comparable<Token> {
 	}
 	
 	public Token() {
+		_tokId = tokCount;
+		tokCount++;
 		_text = "";
 		_fromTextOffset = Integer.MIN_VALUE;
 		_toTextOffset = Integer.MAX_VALUE;
 		_type = TokenType.NONE;
+	}
+	
+	public boolean isEmpty() {
+		return getType() == TokenType.NONE;
 	}
 
 	public Integer getFromOffset() {

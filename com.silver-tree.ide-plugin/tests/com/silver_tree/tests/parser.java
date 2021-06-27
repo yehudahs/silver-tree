@@ -15,12 +15,16 @@ public class parser {
 	public static void main(String[] args) {
 		File sampleFolder = new File("./samples");
 		ArrayList<File> dtsFiles = listFilesForFolder(sampleFolder);
-		int numOfSucc = 0;
+		int numOfSucc = 0, testNum = 0;
 		for (File dtsFile : dtsFiles) {
 			int rc = runTest(dtsFile);
+			String result = "Fail\n";
 			if (rc == 0) {
+				result = "Succ\n";
 				numOfSucc++;
 			}
+			System.out.println("test: " + testNum + " " + result);
+			testNum++;
 		}
 
 		System.out.println("succ: " + numOfSucc + "(" + numOfSucc / dtsFiles.size() + "%)");

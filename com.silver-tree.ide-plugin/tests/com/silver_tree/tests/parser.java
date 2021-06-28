@@ -22,7 +22,7 @@ public class parser {
 			// 1. the test_list is empty (just run all tests)
 			// 2. the test_list contains this test (the user want to run this specific test).
 			if (test_list.isEmpty() || test_list.contains(testNum)) {
-				System.out.print("test: " + testNum + ": dtsFile: ");
+				System.out.print("test: " + testNum + ": dtsFile: " + dtsFile + ": ");
 				int rc = runTest(dtsFile);
 				String result = "Fail\n";
 				if (rc == 0) {

@@ -16,6 +16,7 @@ public class DeviceTree extends DeviceTreeObject{
 		try {
 			parse();
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("error parsing:\n" + tok);
 		}
 	}
@@ -67,7 +68,7 @@ public class DeviceTree extends DeviceTreeObject{
 		}
 	}
 	
-	private Token getNextToken(int startPos) {
+	private Token getNextToken(int startPos) throws Exception {
 		//check if we have comments
 		Token singleCommentTok = getNextSingleLineCommentPos(startPos);
 		if (!singleCommentTok.isEmpty())
@@ -87,6 +88,9 @@ public class DeviceTree extends DeviceTreeObject{
 		nextTokens.add(getNextKeyValuePos(startPos));
 		nextTokens.add(getNextDeviceTreePos(startPos));
 		Token nextToken = Collections.min(nextTokens);
+		if (nextToken.isEmpty()) {
+			throw new Exception("returning empty token...");
+		}
 		return nextToken;
 	}
 	
@@ -119,13 +123,22 @@ public class DeviceTree extends DeviceTreeObject{
 	}
 	
 	private Token getNextIncludePos(int currPos) {
-		if (! getToken().toString().substring(currPos).startsWith("#include")) {
-			return new Token();
+		if (getToken().toString().substring(currPos).startsWith("#include")) {
+			int includeStartPos = getToken().toString().indexOf("#include", currPos);
+			int endOfLinePos = getToken().toString().indexOf("\n", includeStartPos);
+			Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, currPos, Token.TokenType.INCLUDE);
+			return tok;
 		}
-		int includeStartPos = getToken().toString().indexOf("#include", currPos);
-		int endOfLinePos = getToken().toString().indexOf("\n", includeStartPos);
-		Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, currPos, Token.TokenType.INCLUDE);
-		return tok;
+
+		if (getToken().toString().substring(currPos).startsWith("/include")) {
+			int includeStartPos = getToken().toString().indexOf("/include", currPos);
+			int endOfLinePos = getToken().toString().indexOf("\n", includeStartPos);
+			Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, currPos, Token.TokenType.INCLUDE);
+			return tok;
+		}
+
+		return new Token();
+		
 	}
 
 

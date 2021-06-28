@@ -12,6 +12,7 @@ public class Token implements Comparable<Token> {
 	private static int tokCount = 0;
 	private Integer _tokId;
 	private String _text;
+	private Integer _tokenIdentifierPos;
 	private Integer _fromTextOffset;
 	private Integer _toTextOffset;
 	private TokenType _type;
@@ -29,15 +30,19 @@ public class Token implements Comparable<Token> {
 	public enum AttributeType{
 		None,
 		SINGLE_LINE_ATTRIBUTE,
+		KEY_VALUE_ATTRIBUTE,
 		KEY_STRING_ATTRIBUTE,
 		KEY_INT_ATTRIBUTE,
 	}
 	
-	public Token(String text, Integer from, Integer to, TokenType type) {
+	public Token(String text, Integer from, Integer to, Integer identifierPos, TokenType type) {
+		_tokId = tokCount;
+		tokCount++;
 		_text = text;
 		_fromTextOffset = from;
 		_toTextOffset = to;
 		_type = type;
+		_tokenIdentifierPos = identifierPos;
 	}
 	
 	public Token() {
@@ -47,10 +52,19 @@ public class Token implements Comparable<Token> {
 		_fromTextOffset = Integer.MIN_VALUE;
 		_toTextOffset = Integer.MAX_VALUE;
 		_type = TokenType.NONE;
+		_tokenIdentifierPos = Integer.MAX_VALUE;
+	}
+	
+	public int getTokenIdentifierPos() {
+		return _tokenIdentifierPos;
 	}
 	
 	public boolean isEmpty() {
 		return getType() == TokenType.NONE;
+	}
+	
+	public int getID() {
+		return _tokId;
 	}
 
 	public Integer getFromOffset() {
@@ -100,18 +114,9 @@ public class Token implements Comparable<Token> {
 
 	@Override
 	public int compareTo(Token o) {
-		Integer distanceToObject = getToOffset();
-		Integer otherDistanceToObject = o.getToOffset();
-		
-		// when we are dealing with trees than the distance is when the tree starts
-		// otherwise the attribute inside the tree will be catch first.
-		if (getType() == TokenType.TREE) {
-			distanceToObject = getFromOffset();
-		}
-		if (o.getType() == TokenType.TREE) {
-			otherDistanceToObject = o.getFromOffset();
-		}
-		return distanceToObject.compareTo(otherDistanceToObject);
+		Integer distanceToToken = getTokenIdentifierPos();
+		Integer otherDistanceToToken = o.getTokenIdentifierPos();
+		return distanceToToken.compareTo(otherDistanceToToken);
 	}
 	
 	

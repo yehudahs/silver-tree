@@ -12,7 +12,12 @@ public class DeviceTree extends DeviceTreeObject{
 		setToken(tok);
 		getToken().setType(Token.TokenType.TREE);
 		children = new ArrayList<DeviceTreeObject>();
-		parse();
+		
+		try {
+			parse();
+		} catch (Exception e) {
+			System.out.println("error parsing:\n" + tok);
+		}
 	}
 	
 
@@ -72,10 +77,15 @@ public class DeviceTree extends DeviceTreeObject{
 		if (! multiLineTok.isEmpty())
 			return multiLineTok;
 		
+		//check if we have include
+		Token includeTok = getNextIncludePos(startPos);
+		if (! includeTok.isEmpty())
+			return includeTok;
+		
 		ArrayList<Token> nextTokens = new ArrayList<Token>();
-		nextTokens.add(getNextAttributePos(startPos));
+		nextTokens.add(getNextSingleLineAttrPos(startPos));
+		nextTokens.add(getNextKeyValuePos(startPos));
 		nextTokens.add(getNextDeviceTreePos(startPos));
-		nextTokens.add(getNextIncludePos(startPos));
 		Token nextToken = Collections.min(nextTokens);
 		return nextToken;
 	}
@@ -91,7 +101,7 @@ public class DeviceTree extends DeviceTreeObject{
 		}
 		
 		int multiCommentEndPos = getToken().toString().indexOf("*/", currPos) + 2;
-		Token tok = new Token(getToken().toString(), currPos, multiCommentEndPos, Token.TokenType.COMMENT);
+		Token tok = new Token(getToken().toString(), currPos, multiCommentEndPos, currPos, Token.TokenType.COMMENT);
 		return tok;
 	}
 
@@ -104,16 +114,17 @@ public class DeviceTree extends DeviceTreeObject{
 		}
 
 		int endOfLinePos = getToken().toString().indexOf("\n", currPos);
-		Token tok = new Token(getToken().toString(), currPos, endOfLinePos, Token.TokenType.COMMENT);
+		Token tok = new Token(getToken().toString(), currPos, endOfLinePos, currPos, Token.TokenType.COMMENT);
 		return tok;
 	}
 	
 	private Token getNextIncludePos(int currPos) {
-		int includeStartPos = getToken().toString().indexOf("#include", currPos);
-		if (includeStartPos == -1)
+		if (! getToken().toString().substring(currPos).startsWith("#include")) {
 			return new Token();
+		}
+		int includeStartPos = getToken().toString().indexOf("#include", currPos);
 		int endOfLinePos = getToken().toString().indexOf("\n", includeStartPos);
-		Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, Token.TokenType.INCLUDE);
+		Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, currPos, Token.TokenType.INCLUDE);
 		return tok;
 	}
 
@@ -133,20 +144,27 @@ public class DeviceTree extends DeviceTreeObject{
 		
 		//need to find the ending "}"
 		int deviceTreeEndPos = findClosingBrackets(getToken().toString(), deviceTreeStartPos);
-		Token tok = new Token(getToken().toString(), deviceTreeStartPos, deviceTreeEndPos, Token.TokenType.TREE);
+		Token tok = new Token(getToken().toString(), deviceTreeStartPos, deviceTreeEndPos, deviceTreeStartPos, Token.TokenType.TREE);
 		return tok;
 	}
 
-
+	private Token getNextKeyValuePos(int currPos) {
+		int KeyValuePos = getToken().toString().indexOf("=", currPos);
+		if (KeyValuePos == -1)
+			return new Token();
+		int attributeEndPos = getToken().toString().indexOf(";", currPos);
+		Token tok = new Token(getToken().toString(), currPos, attributeEndPos+1, KeyValuePos, Token.TokenType.ATTRIBUTE);
+		return tok;
+	}
 	/**
 	 * @param currPos
 	 * @return
 	 */
-	private Token getNextAttributePos(int currPos) {
+	private Token getNextSingleLineAttrPos(int currPos) {
 		int attributeEndPos = getToken().toString().indexOf(";", currPos);
 		if (attributeEndPos == -1)
 			return new Token();
-		Token tok = new Token(getToken().toString(), currPos, attributeEndPos+1, Token.TokenType.ATTRIBUTE);
+		Token tok = new Token(getToken().toString(), currPos, attributeEndPos+1, attributeEndPos, Token.TokenType.ATTRIBUTE);
 		return tok;
 	}
 	

@@ -137,6 +137,16 @@ public class DeviceTree extends DeviceTreeObject{
 			Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, currPos, Token.TokenType.INCLUDE);
 			return tok;
 		}
+		
+		if (getToken().toString().substring(currPos).endsWith(".dts")) {
+			int endOfLinePos = getToken().toString().indexOf("\n", currPos);
+			// sometimes the only line in the file is just a refernce to another .dts file without
+			//ending \n
+			if (endOfLinePos == -1)
+				endOfLinePos = getToken().toString().length();
+			Token tok = new Token(getToken().toString(), currPos, endOfLinePos, currPos, Token.TokenType.INCLUDE);
+			return tok;
+		}
 
 		return new Token();
 		

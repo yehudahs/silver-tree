@@ -89,6 +89,7 @@ public class DeviceTree extends DeviceTreeObject{
 		nextTokens.add(getNextDeviceTreePos(startPos));
 		Token nextToken = Collections.min(nextTokens);
 		if (nextToken.isEmpty()) {
+			System.out.println("\nError: can't tokinize:\n" + getToken().toString().substring(startPos));
 			throw new Exception("returning empty token...");
 		}
 		return nextToken;
@@ -261,4 +262,5 @@ public class DeviceTree extends DeviceTreeObject{
 		dumpString += "};\n";
 		return dumpString;
     }
+	
 }

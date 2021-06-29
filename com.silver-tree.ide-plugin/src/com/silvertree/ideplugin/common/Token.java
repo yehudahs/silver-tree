@@ -36,8 +36,7 @@ public class Token implements Comparable<Token> {
 	}
 	
 	public Token(String text, Integer from, Integer to, Integer identifierPos, TokenType type) {
-		_tokId = tokCount;
-		tokCount++;
+		getNextID();
 		_text = text;
 		_fromTextOffset = from;
 		_toTextOffset = to;
@@ -46,13 +45,17 @@ public class Token implements Comparable<Token> {
 	}
 	
 	public Token() {
-		_tokId = tokCount;
-		tokCount++;
+		getNextID();
 		_text = "";
 		_fromTextOffset = Integer.MIN_VALUE;
 		_toTextOffset = Integer.MAX_VALUE;
 		_type = TokenType.NONE;
 		_tokenIdentifierPos = Integer.MAX_VALUE;
+	}
+
+	private void getNextID() {
+		_tokId = tokCount;
+		tokCount++;
 	}
 	
 	public int getTokenIdentifierPos() {

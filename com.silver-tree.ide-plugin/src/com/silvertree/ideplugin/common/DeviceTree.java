@@ -188,20 +188,22 @@ public class DeviceTree extends DeviceTreeObject{
 	    int counter = 1;
 	    while (counter > 0) {
 	        try {
-				char c = text.charAt(++closePos);
+				char c = text.charAt(closePos);
 				if (c == '{') {
 				    counter++;
 				}
 				else if (c == '}') {
 				    counter--;
 				}
+				closePos++;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new Exception("can't find closing brackets");
 			}
 	    }
-	    return closePos;
+	    //don't return the '}'.
+	    return closePos-1;
 	}
 	
 	public void addChild(DeviceTreeObject child) {

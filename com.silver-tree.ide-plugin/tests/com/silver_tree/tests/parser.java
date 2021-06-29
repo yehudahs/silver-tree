@@ -1,6 +1,8 @@
 package com.silver_tree.tests;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,9 +25,9 @@ public class parser {
 			// 2. the test_list contains this test (the user want to run this specific test).
 			if (test_list.isEmpty() || test_list.contains(testNum)) {
 				System.out.print("test: " + testNum + ": dtsFile: " + dtsFile + ": ");
-				int rc = runTest(dtsFile);
+				CmdProc proc = runTest(dtsFile);
 				String result = "Fail\n";
-				if (rc == 0) {
+				if (proc.returnCode == 0) {
 					result = "Succ\n";
 					numOfSucc++;
 				}
@@ -34,7 +36,7 @@ public class parser {
 			testNum++;
 		}
 
-		System.out.println("succ: " + numOfSucc + "(" + numOfSucc / dtsFiles.size() + "%)");
+		System.out.println("succ: " + numOfSucc + " / " + (testNum + 1) + " (" + numOfSucc / dtsFiles.size() + "%)");
 	}
 	
 	private static ArrayList<Integer> parse_args(String[] args) {
@@ -45,7 +47,7 @@ public class parser {
 		return test_list;
 	}
 
-	private static int runTest(File dtsFile) {
+	private static CmdProc runTest(File dtsFile) {
 		try {
 			String content = Files.readString(Paths.get(dtsFile.getPath()), StandardCharsets.UTF_8);
 			Token tok = new Token(content, 0, content.length(), 0, Token.TokenType.TREE);
@@ -55,14 +57,12 @@ public class parser {
 			Files.write(inputFile, parserDump.getBytes(StandardCharsets.UTF_8));
 			Path outputFile = Files.createTempFile(null, null);
 			String[] cmd = {"dtc", "--in-format dts --out-format dtb -o " + outputFile.toString() + " " + inputFile.toString()};
-			ProcessBuilder builder = new ProcessBuilder(cmd);
-			Process process = builder.start();
-			int exitCode = process.waitFor();
-			return exitCode;
+			CmdProc proc = new CmdProc(cmd);
+			return proc;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return 1;
+			return null;
 		}
 	}
 

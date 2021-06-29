@@ -46,7 +46,7 @@ public class DeviceTree extends DeviceTreeObject{
 			case ATTRIBUTE:
 				DeviceTreeAttribute s = new DeviceTreeAttribute(tok);
 				addChild(s);
-				currPos = tok.getToOffset() + 1;
+				currPos = tok.getToOffset();
 				break;
 			case TREE:
 				DeviceTree t = new DeviceTree(tok);
@@ -146,8 +146,9 @@ public class DeviceTree extends DeviceTreeObject{
 	/**
 	 * @param currPos
 	 * @return
+	 * @throws Exception 
 	 */
-	private Token getNextDeviceTreePos(int currPos) {
+	private Token getNextDeviceTreePos(int currPos) throws Exception {
 		int deviceTreeStartPos = getToken().toString().indexOf("{", currPos);
 		if (deviceTreeStartPos == -1)
 			return new Token();
@@ -182,7 +183,7 @@ public class DeviceTree extends DeviceTreeObject{
 		return tok;
 	}
 	
-	private int findClosingBrackets(String text, int openPos) {
+	private int findClosingBrackets(String text, int openPos) throws Exception {
 	    int closePos = openPos;
 	    int counter = 1;
 	    while (counter > 0) {
@@ -197,6 +198,7 @@ public class DeviceTree extends DeviceTreeObject{
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw new Exception("can't find closing brackets");
 			}
 	    }
 	    return closePos;

@@ -47,7 +47,7 @@ public class parser {
 
 	private static int runTest(File dtsFile) {
 		try {
-			String content = Files.readString(Paths.get(dtsFile.getPath()), StandardCharsets.US_ASCII);
+			String content = Files.readString(Paths.get(dtsFile.getPath()), StandardCharsets.UTF_8);
 			Token tok = new Token(content, 0, content.length(), 0, Token.TokenType.TREE);
 			DeviceTree root = new DeviceTree(tok);
 			String parserDump = root.dump();

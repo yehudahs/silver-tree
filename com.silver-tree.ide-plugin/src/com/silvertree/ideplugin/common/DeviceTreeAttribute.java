@@ -31,10 +31,10 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 			}
 			
 			if (getKey().contains("#address-cells")) {
-				int addrCell = Integer.parseInt(getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")));
+				int addrCell = Integer.decode(getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")));
 				setAddressCells(addrCell);
 			}else if(getKey().contains("#size-cells")) {
-				int sizeCells = Integer.parseInt(getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")));
+				int sizeCells = Integer.decode(getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")));
 				setSizeCells(sizeCells);
 			}
 		}

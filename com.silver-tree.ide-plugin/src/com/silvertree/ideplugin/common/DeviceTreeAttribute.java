@@ -25,7 +25,7 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 			setValue(null);
 		}else {
 			// we found a key value sentence.
-			setValue(getToken().toString().substring(isKeyValue, getToken().toString().length()));
+			setValue(getToken().toString().substring(isKeyValue + 1, getToken().toString().length()));
 			setKey(getToken().toString().substring(0, isKeyValue));
 
 			int isKeyString = getKey().indexOf("\"", isKeyValue);
@@ -57,14 +57,15 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 	}
 
 	@Override
-	public String dump() {
+	public String dump(int ident) {
 		if (getToken().getType() == Token.TokenType.COMMENT)
 			return null;
 		
-		var dumpString = getKey();
+		var identString = identString(ident);
+		var dumpString = identString + getKey();
 		if (getValue() != null)
 			dumpString += " = " + getValue();
 		
-		return dumpString;
+		return dumpString + "\n";
 	}
 }

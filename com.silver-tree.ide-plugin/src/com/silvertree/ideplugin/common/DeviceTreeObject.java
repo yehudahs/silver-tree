@@ -18,7 +18,7 @@ abstract class DeviceTreeObject implements IAdaptable{
 	private Token _token;
 	
 	public abstract void parse() throws Exception;
-	public abstract String dump(); 
+	public abstract String dump(int ident); 
 	
 	public DeviceTreeObject() {
 		_deviceTreeId = deviceTreeCount;
@@ -139,6 +139,14 @@ abstract class DeviceTreeObject implements IAdaptable{
 	 */
 	public void setValue(String _value) {
 		this._value = _value;
+	}
+	
+	protected String identString(int ident) {
+		var identString = "";
+		for(int i = 0; i < ident; i++) {
+			identString += '\t';
+		}
+		return identString;
 	}
 
 }

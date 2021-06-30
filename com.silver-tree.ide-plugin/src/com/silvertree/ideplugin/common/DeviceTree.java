@@ -266,15 +266,16 @@ public class DeviceTree extends DeviceTreeObject{
 
 
 	@Override
-	public String dump() {
-        var dumpString = getKey() + "{\n";
+	public String dump(int ident) {
+		var identString = identString(ident);
+		var dumpString = identString;
+        dumpString += getKey() + "{\n";
 		for (DeviceTreeObject ob : children) {
-			var child = ob.dump();
+			var child = ob.dump(ident + 1);
 			if (child != null)
 				dumpString += child;
 		}
-		dumpString += "};\n";
+		dumpString += identString + "};\n";
 		return dumpString;
-    }
-	
+    }	
 }

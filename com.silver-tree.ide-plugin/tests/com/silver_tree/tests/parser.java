@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.silvertree.ideplugin.common.DeviceTree;
+import com.silvertree.ideplugin.common.DeviceTreeRoot;
 import com.silvertree.ideplugin.common.Token;
 
 public class parser {
@@ -51,8 +52,8 @@ public class parser {
 		try {
 			String content = Files.readString(Paths.get(dtsFile.getPath()), StandardCharsets.UTF_8);
 			Token tok = new Token(content, 0, content.length(), 0, Token.TokenType.TREE);
-			DeviceTree root = new DeviceTree(tok);
-			String parserDump = root.dump();
+			DeviceTreeRoot root = new DeviceTreeRoot(tok);
+			String parserDump = root.dump(0);
 			Path inputFile = Files.createTempFile(null, null);
 			Files.write(inputFile, parserDump.getBytes(StandardCharsets.UTF_8));
 			Path outputFile = Files.createTempFile(null, null);

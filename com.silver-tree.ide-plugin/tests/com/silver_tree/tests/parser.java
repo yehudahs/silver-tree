@@ -56,7 +56,7 @@ public class parser {
 			Path inputFile = Files.createTempFile(null, null);
 			Files.write(inputFile, parserDump.getBytes(StandardCharsets.UTF_8));
 			Path outputFile = Files.createTempFile(null, null);
-			String[] cmd = {"dtc", "--in-format dts --out-format dtb -o " + outputFile.toString() + " " + inputFile.toString()};
+			String[] cmd = {"dtc", "-I", "dts", "-O", "dtb", "-o", outputFile.toString(), inputFile.toString()};
 			CmdProc proc = new CmdProc(cmd);
 			return proc;
 		} catch (Exception e) {

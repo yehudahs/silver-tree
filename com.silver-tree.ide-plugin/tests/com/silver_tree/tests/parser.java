@@ -31,10 +31,12 @@ public class parser {
 				System.out.print(test);
 				statistics += test;
 				CmdProc proc = runTest(dtsFile);
-				String result = "Fail\n";
+				String result;
 				if (proc.returnCode == 0) {
 					result = "Succ\n";
 					numOfSucc++;
+				}else {
+					result = "Fail (" + proc.errOut +")\n";
 				}
 				System.out.print(result);
 				statistics += result;

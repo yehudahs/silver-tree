@@ -22,6 +22,7 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 		if (isKeyValue == -1) {
 			// we found an attribute sentence.
 			getToken().setAttrType(Token.AttributeType.SINGLE_LINE_ATTRIBUTE);
+			setKey(getToken().toString());
 			setValue(null);
 		}else {
 			// we found a key value sentence.

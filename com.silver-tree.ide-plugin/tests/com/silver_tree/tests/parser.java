@@ -1,16 +1,14 @@
 package com.silver_tree.tests;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import com.silvertree.ideplugin.common.DeviceTree;
 import com.silvertree.ideplugin.common.DeviceTreeRoot;
 import com.silvertree.ideplugin.common.Token;
 
@@ -64,11 +62,20 @@ public class parser {
 			Token tok = new Token(content, 0, content.length(), 0, Token.TokenType.TREE);
 			DeviceTreeRoot root = new DeviceTreeRoot(tok);
 			String parserDump = root.dump(0);
-			Path inputFile = Files.createTempFile(null, null);
-			Files.write(inputFile, parserDump.getBytes(StandardCharsets.UTF_8));
-			Path outputFile = Files.createTempFile(null, null);
+			File inputFile = new File(dtsFile.getParent() + "/input-" + dtsFile.getName());
+			FileWriter writer = new FileWriter(inputFile);
+			writer.write(parserDump);
+			writer.close();
+			File outputFile = new File(dtsFile.getParent() + "/output" + dtsFile.getName());
+//			Path inputFile = Files.createTempFile(null, null);
+//			Files.write(inputFile, parserDump.getBytes(StandardCharsets.UTF_8));
+//			Path outputFile = Files.createTempFile(null, null);
 			String[] cmd = {"dtc", "-I", "dts", "-O", "dtb", "-o", outputFile.toString(), inputFile.toString()};
 			CmdProc proc = new CmdProc(cmd);
+			
+			inputFile.delete();
+			outputFile.delete();
+			
 			return proc;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

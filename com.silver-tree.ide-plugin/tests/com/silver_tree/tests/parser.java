@@ -37,7 +37,7 @@ public class parser {
 			testNum++;
 		}
 
-		System.out.println("succ: " + numOfSucc + " / " + (testNum + 1) + " (" + numOfSucc / dtsFiles.size() + "%)");
+		System.out.println("succ: " + numOfSucc + " / " + (testNum + 1) + " (" + ((float) numOfSucc / dtsFiles.size()) + "%)");
 	}
 	
 	private static ArrayList<Integer> parse_args(String[] args) {

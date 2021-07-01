@@ -2,6 +2,7 @@ package com.silver_tree.tests;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -15,29 +16,36 @@ import com.silvertree.ideplugin.common.Token;
 
 public class parser {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		ArrayList<Integer> test_list = parse_args(args);
 		File sampleFolder = new File("./samples");
 		ArrayList<File> dtsFiles = listFilesForFolder(sampleFolder);
+		String statistics = "";
 		int numOfSucc = 0, testNum = 0;
 		for (File dtsFile : dtsFiles) {
 			// run test if:
 			// 1. the test_list is empty (just run all tests)
 			// 2. the test_list contains this test (the user want to run this specific test).
 			if (test_list.isEmpty() || test_list.contains(testNum)) {
-				System.out.print("test: " + testNum + ": dtsFile: " + dtsFile + ": ");
+				String test = "test: " + testNum + ": dtsFile: " + dtsFile + ": ";
+				System.out.print(test);
+				statistics += test;
 				CmdProc proc = runTest(dtsFile);
 				String result = "Fail\n";
 				if (proc.returnCode == 0) {
 					result = "Succ\n";
 					numOfSucc++;
 				}
-				System.out.println(result);
+				System.out.print(result);
+				statistics += result;
 			}
 			testNum++;
 		}
-
-		System.out.println("succ: " + numOfSucc + " / " + (testNum + 1) + " (" + ((float) numOfSucc / dtsFiles.size()) + "%)");
+		String bottomLine = "succ: " + numOfSucc + " / " + (testNum + 1) + " (" + ((float) numOfSucc / dtsFiles.size()) + "%)";
+		System.out.println(bottomLine);
+		statistics += bottomLine;
+		Path statisticsFile = Path.of("tests_results.txt");
+		Files.writeString(statisticsFile, statistics);
 	}
 	
 	private static ArrayList<Integer> parse_args(String[] args) {

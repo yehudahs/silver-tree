@@ -24,6 +24,7 @@ public class Token implements Comparable<Token> {
 		ATTRIBUTE,
 		INCLUDE,
 		COMMENT,
+		DEFINE,
 		
 	}
 	

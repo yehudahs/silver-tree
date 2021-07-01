@@ -44,6 +44,8 @@ public class DeviceTree extends DeviceTreeObject{
 			Token tok = getNextToken(currPos);
 			switch(tok.getType()) {
 			case ATTRIBUTE:
+			case INCLUDE:
+			case DEFINE:
 				DeviceTreeAttribute s = new DeviceTreeAttribute(tok);
 				addChild(s);
 				currPos = tok.getToOffset();
@@ -83,6 +85,10 @@ public class DeviceTree extends DeviceTreeObject{
 		if (! includeTok.isEmpty())
 			return includeTok;
 		
+		Token defineTok = getNextDefinePos(startPos);
+		if (! defineTok.isEmpty())
+			return defineTok;
+		
 		ArrayList<Token> nextTokens = new ArrayList<Token>();
 		nextTokens.add(getNextSingleLineAttrPos(startPos));
 		nextTokens.add(getNextKeyValuePos(startPos));
@@ -96,6 +102,18 @@ public class DeviceTree extends DeviceTreeObject{
 	}
 	
 	
+	private Token getNextDefinePos(int currPos) {
+		if (getToken().toString().substring(currPos).startsWith("#define")) {
+			int includeStartPos = getToken().toString().indexOf("#define", currPos);
+			int endOfLinePos = getToken().toString().indexOf("\n", includeStartPos);
+			Token tok = new Token(getToken().toString(), includeStartPos, endOfLinePos, currPos, Token.TokenType.DEFINE);
+			return tok;
+		}
+		
+		return new Token();
+	}
+
+
 	/**
 	 * @param currPos
 	 */

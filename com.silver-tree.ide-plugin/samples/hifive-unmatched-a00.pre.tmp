@@ -1,5 +1,0 @@
-hifive-unleashed-a00.o: \
- arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts \
- arch/riscv/boot/dts/sifive/fu540-c000.dtsi \
- include/dt-bindings/clock/sifive-fu540-prci.h \
- include/dt-bindings/gpio/gpio.h

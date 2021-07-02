@@ -63,22 +63,51 @@ public class parser {
 			DeviceTreeRoot root = new DeviceTreeRoot(tok);
 			String parserDump = root.dump(0);
 			File inputFile = new File(dtsFile.getParent() + "/input-" + dtsFile.getName());
+			File outputFile = new File(dtsFile.getParent() + "/output" + dtsFile.getName());
+			File preProcOutFile = new File(dtsFile.getPath().replace(".dts", ".tmp"));
 			FileWriter writer = new FileWriter(inputFile);
 			writer.write(parserDump);
 			writer.close();
-			File outputFile = new File(dtsFile.getParent() + "/output" + dtsFile.getName());
-//			Path inputFile = Files.createTempFile(null, null);
-//			Files.write(inputFile, parserDump.getBytes(StandardCharsets.UTF_8));
-//			Path outputFile = Files.createTempFile(null, null);
-			String[] cmd = {"dtc", "-I", "dts", "-O", "dtb", "-o", outputFile.toString(), inputFile.toString()};
+			
+			
+			// run the preprocessor
+			// example of cmd run
+			// gcc -E -Wp,-MD,hifive-unmatched-a00.pre.tmp -nostdinc -Iarch/riscv/boot/dts -Iinclude -undef -D__DTS__  -x assembler-with-cpp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp  ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
+			String[] PreProcCmd = {"gcc", 
+					"-E", 
+					"-Wp,-MD," + dtsFile.getPath().replace(".dts", ".pre.tmp"),
+					"-nostdinc",
+					"-I./samples/include",
+					"-undef", "-D__DTS__",
+					"-x", "assembler-with-cpp",
+					"-o", preProcOutFile.getPath(),
+					dtsFile.getPath(),
+			};
+			CmdProc preProc = new CmdProc(PreProcCmd);
+			if (preProc.returnCode != 0) {
+				inputFile.delete();
+				outputFile.delete();
+				preProcOutFile.delete();
+				return preProc;
+			}
+
+			//run the dtc
+			//example of running the dtc
+			// dtc -I dts -O dts ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.final
+			
+			String[] cmd = {"dtc", 
+					"-I", "dts", 
+					"-O", "dtb", 
+					"-o", outputFile.toString(), preProcOutFile.getPath()};
 			CmdProc proc = new CmdProc(cmd);
 			
 			inputFile.delete();
 			outputFile.delete();
+			preProcOutFile.delete();
 			
 			return proc;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			System.out.println("got exception working on: " + dtsFile.getPath());
 			e.printStackTrace();
 			return null;
 		}

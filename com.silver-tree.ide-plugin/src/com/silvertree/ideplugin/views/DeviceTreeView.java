@@ -102,7 +102,7 @@ public class DeviceTreeView extends ViewPart {
 		}
 		public Object [] getChildren(Object parent) {
 			if (parent instanceof DeviceTree) {
-				return ((DeviceTree)parent).getChildren();
+				return ((DeviceTree)parent).getChildren(true);
 			}
 			return new Object[0];
 		}

@@ -43,13 +43,6 @@ public class DeviceTree extends DeviceTreeObject{
 			// get the next token.
 			Token tok = getNextToken(currPos);
 			switch(tok.getType()) {
-			case ATTRIBUTE:
-			case INCLUDE:
-			case DEFINE:
-				DeviceTreeAttribute s = new DeviceTreeAttribute(tok);
-				addChild(s);
-				currPos = tok.getToOffset();
-				break;
 			case TREE:
 				DeviceTree t = new DeviceTree(tok);
 				t.setKey(getToken().toString().substring(currPos, getToken().toString().indexOf("{", currPos)));				
@@ -61,9 +54,10 @@ public class DeviceTree extends DeviceTreeObject{
 				currPos = getToken().toString().indexOf(";", currPos) + 1;
 				break;
 			default:
-				currPos = tok.getToOffset() + 1;
+				DeviceTreeAttribute s = new DeviceTreeAttribute(tok);
+				addChild(s);
+				currPos = tok.getToOffset();
 				break;
-			
 			}
 			
 			iteration++;
@@ -242,8 +236,17 @@ public class DeviceTree extends DeviceTreeObject{
 		children.remove(child);
 		child.setParent(null);
 	}
-	public DeviceTreeObject [] getChildren() {
-		return (DeviceTreeObject [])children.toArray(new DeviceTreeObject[children.size()]);
+	public DeviceTreeObject [] getChildren(boolean visibleOnly) {
+		if (visibleOnly) {
+			ArrayList<DeviceTreeObject> visibleChilderen = new ArrayList<DeviceTreeObject>();
+			for (DeviceTreeObject child : children)
+				if (child.isVisible())
+					visibleChilderen.add(child);
+			return (DeviceTreeObject [])visibleChilderen.toArray(new DeviceTreeObject[visibleChilderen.size()]);
+		}
+		else
+			return (DeviceTreeObject [])children.toArray(new DeviceTreeObject[children.size()]);
+		
 	}
 	public boolean hasChildren() {
 		return children.size()>0;
@@ -295,5 +298,11 @@ public class DeviceTree extends DeviceTreeObject{
 		}
 		dumpString += identString + "};\n";
 		return dumpString;
-    }	
+    }
+
+
+	@Override
+	public boolean isVisible() {
+		return true;
+	}	
 }

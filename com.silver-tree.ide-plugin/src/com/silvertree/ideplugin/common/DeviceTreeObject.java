@@ -18,7 +18,8 @@ abstract class DeviceTreeObject implements IAdaptable{
 	private Token _token;
 	
 	public abstract void parse() throws Exception;
-	public abstract String dump(int ident); 
+	public abstract String dump(int ident);
+	public abstract boolean isVisible();
 	
 	public DeviceTreeObject() {
 		_deviceTreeId = deviceTreeCount;

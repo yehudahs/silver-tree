@@ -1,5 +1,7 @@
 package com.silvertree.ideplugin.common;
 
+import com.silvertree.ideplugin.common.Token.TokenType;
+
 public class DeviceTreeAttribute extends DeviceTreeObject {
 	
 	public DeviceTreeAttribute(Token tok) {
@@ -68,5 +70,12 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 			dumpString += " = " + getValue();
 		
 		return dumpString + "\n";
+	}
+
+	@Override
+	public boolean isVisible() {
+		if(getToken().getType() == TokenType.COMMENT)
+			return false;
+		return true;
 	}
 }

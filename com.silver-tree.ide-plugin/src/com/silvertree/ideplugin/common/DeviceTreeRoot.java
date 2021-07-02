@@ -16,6 +16,8 @@ public class DeviceTreeRoot extends DeviceTree {
 		}
 		return dumpString;
     }
-
-
+	
+	public boolean hasParent() {
+		return false;
+	}
 }

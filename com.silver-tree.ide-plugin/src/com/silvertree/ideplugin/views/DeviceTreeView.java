@@ -2,18 +2,18 @@ package com.silvertree.ideplugin.views;
 
 import java.io.BufferedReader;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import com.silvertree.ideplugin.common.DeviceTree;
+import com.silvertree.ideplugin.common.DeviceTreeObject;
 import com.silvertree.ideplugin.common.DeviceTreeRoot;
 import com.silvertree.ideplugin.common.Token;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
-import org.eclipse.ui.internal.editors.text.EditorsPlugin;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.resources.IFile;
@@ -31,10 +31,6 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
-import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 
 import javax.inject.Inject;
 
@@ -71,6 +67,7 @@ public class DeviceTreeView extends ViewPart {
 	private Action action1;
 	private Action action2;
 	private Action doubleClickAction;
+	private IWorkbenchPage page; 
 	 
 	class ViewContentProvider implements ITreeContentProvider {
 		private DeviceTree invisibleRoot;
@@ -134,8 +131,8 @@ public class DeviceTreeView extends ViewPart {
 		String editorContent = null;
 		IWorkbenchPart workbenchPart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
 		if (workbenchPart != null) {
-			IWorkbenchPage page = workbenchPart.getSite().getPage();
-			editorContent = getDeviceTreeEditorContent(page);
+			page = workbenchPart.getSite().getPage();
+			editorContent = getDeviceTreeEditorContent();
 		}
 		viewer.setContentProvider(new ViewContentProvider(editorContent));
 		viewer.setInput(getViewSite());
@@ -153,8 +150,8 @@ public class DeviceTreeView extends ViewPart {
 			
 			public void partActivated(IWorkbenchPartReference partRef) {
 				if (partRef.getId().equals(DeviceTreeEditor.ID)) {
-					IWorkbenchPage page = partRef.getPage();
-					String editorContent = getDeviceTreeEditorContent(page);
+					page = partRef.getPage();
+					String editorContent = getDeviceTreeEditorContent();
 					viewer.setContentProvider(new ViewContentProvider(editorContent));
 				}
 			}
@@ -162,9 +159,12 @@ public class DeviceTreeView extends ViewPart {
 		});
 	}
 	
-	public String getDeviceTreeEditorContent(IWorkbenchPage page) {
+	public String getDeviceTreeEditorContent() {
 		InputStream inputStream;
 		try {
+			if (page == null) {
+				return null;
+			}
 			IFile file = (IFile) page.getActiveEditor().getEditorInput().getAdapter(IFile.class);
 			if (file == null) {
 				return null;
@@ -189,7 +189,7 @@ public class DeviceTreeView extends ViewPart {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		   IResourceChangeListener listener = new IResourceChangeListener() {
 		      public void resourceChanged(IResourceChangeEvent event) {
-		    	  showMessage("Something changed!");
+//		    	  showMessage("Something changed!");
 		      }
 		   };
 		   workspace.addResourceChangeListener(listener, IResourceChangeEvent.PRE_CLOSE | 
@@ -265,9 +265,22 @@ public class DeviceTreeView extends ViewPart {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
-				showMessage("Double-click detected on "+obj.toString());
+				navigateToLine((((DeviceTreeObject)obj).getOffsetInEditor()), ((DeviceTreeObject)obj).getToken().toString().length());
 			}
 		};
+	}
+	
+	public void navigateToLine(int offset, int length){
+		if (page != null) {
+			IFile file = (IFile) page.getActiveEditor().getEditorInput().getAdapter(IFile.class);
+			try {
+				IEditorPart editor = (IEditorPart) IDE.openEditor(page, file);
+				((AbstractTextEditor) editor).selectAndReveal(offset, length);
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void hookDoubleClickAction() {

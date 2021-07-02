@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IAdaptable;
 
-abstract class DeviceTreeObject implements IAdaptable{
+public abstract class DeviceTreeObject implements IAdaptable{
 	
 	private static int deviceTreeCount = 0;
 	private int _deviceTreeId;
@@ -47,6 +47,10 @@ abstract class DeviceTreeObject implements IAdaptable{
 	
 	public DeviceTreeObject getParent() {
 		return parent;
+	}
+	
+	public boolean hasParent() {
+		return true;
 	}
 	
 	@Override
@@ -148,6 +152,14 @@ abstract class DeviceTreeObject implements IAdaptable{
 			identString += '\t';
 		}
 		return identString;
+	}
+	
+	public int getOffsetInEditor() {
+		int offsetInEditor = getToken().getFromOffset();
+		if (hasParent()) {
+			offsetInEditor += getParent().getOffsetInEditor();
+		}
+		return offsetInEditor;
 	}
 
 }

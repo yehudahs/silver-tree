@@ -65,6 +65,7 @@ public class parser {
 			File inputFile = new File(dtsFile.getParent() + "/input-" + dtsFile.getName());
 			File outputFile = new File(dtsFile.getParent() + "/output" + dtsFile.getName());
 			File preProcOutFile = new File(dtsFile.getPath().replace(".dts", ".tmp"));
+			File preProcMDFile = new File(dtsFile.getPath().replace(".dts", ".pre.tmp"));
 			FileWriter writer = new FileWriter(inputFile);
 			writer.write(parserDump);
 			writer.close();
@@ -75,7 +76,7 @@ public class parser {
 			// gcc -E -Wp,-MD,hifive-unmatched-a00.pre.tmp -nostdinc -Iarch/riscv/boot/dts -Iinclude -undef -D__DTS__  -x assembler-with-cpp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp  ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
 			String[] PreProcCmd = {"gcc", 
 					"-E", 
-					"-Wp,-MD," + dtsFile.getPath().replace(".dts", ".pre.tmp"),
+					"-Wp,-MD," + preProcMDFile.getPath(),
 					"-nostdinc",
 					"-I./samples/include",
 					"-undef", "-D__DTS__",
@@ -88,6 +89,7 @@ public class parser {
 				inputFile.delete();
 				outputFile.delete();
 				preProcOutFile.delete();
+				preProcMDFile.delete();
 				return preProc;
 			}
 
@@ -104,6 +106,7 @@ public class parser {
 			inputFile.delete();
 			outputFile.delete();
 			preProcOutFile.delete();
+			preProcMDFile.delete();
 			
 			return proc;
 		} catch (Exception e) {

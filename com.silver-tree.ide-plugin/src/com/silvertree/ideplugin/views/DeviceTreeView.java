@@ -54,6 +54,7 @@ public class DeviceTreeView extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 	private IWorkbenchPage page; 
+	String currEditorName;
 	 
 	class ViewContentProvider implements ITreeContentProvider {
 		private DeviceTree invisibleRoot;
@@ -118,6 +119,7 @@ public class DeviceTreeView extends ViewPart {
 		IWorkbenchPart workbenchPart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
 		if (workbenchPart != null) {
 			page = workbenchPart.getSite().getPage();
+			currEditorName = page.getActiveEditor().getEditorInput().getName();
 			editorContent = getDeviceTreeEditorContent();
 		}
 		viewer.setContentProvider(new ViewContentProvider(editorContent));
@@ -136,9 +138,25 @@ public class DeviceTreeView extends ViewPart {
 			
 			public void partActivated(IWorkbenchPartReference partRef) {
 				if (partRef.getId().equals(DeviceTreeEditor.ID)) {
+					
+					// check if the editor is showing the same page, in that case just need to refresh.
+					if (page != null) {
+						String activatedEditorName = partRef.getPage().getActiveEditor().getEditorInput().getName();
+						if (currEditorName.contentEquals(activatedEditorName)) {
+							viewer.refresh();
+							return;
+						}
+					}
+					
+					
+					// either the page is opened in the first time (page==null)
+					// or we opened a new file
+					// in that case need to set a new content to the tree.
 					page = partRef.getPage();
+					currEditorName = page.getActiveEditor().getEditorInput().getName();
 					String editorContent = getDeviceTreeEditorContent();
 					viewer.setContentProvider(new ViewContentProvider(editorContent));
+					return;			
 				}
 			}
 
@@ -175,7 +193,7 @@ public class DeviceTreeView extends ViewPart {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		   IResourceChangeListener listener = new IResourceChangeListener() {
 		      public void resourceChanged(IResourceChangeEvent event) {
-//		    	  showMessage("Something changed!");
+		    	  System.out.println("event: " + event.getType());
 		      }
 		   };
 		   workspace.addResourceChangeListener(listener, IResourceChangeEvent.PRE_CLOSE | 

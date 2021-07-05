@@ -161,5 +161,30 @@ public abstract class DeviceTreeObject implements IAdaptable{
 		}
 		return offsetInEditor;
 	}
+	
+	public String getPath() {
+		String path = getKey();
+		if (hasParent()) {
+			String parentPath = getParent().getPath();
+			path = parentPath + "-" + path;
+		}
+		return path;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DeviceTreeObject) {
+			if (((DeviceTreeObject) obj).getPath().contentEquals(getPath()))
+				return true;
+			return false;
+		}else {
+			return super.equals(obj);	
+		}
+		
+	}
+	@Override
+	public int hashCode() {
+		return getPath().hashCode();
+	}
 
 }

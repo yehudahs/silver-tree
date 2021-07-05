@@ -114,6 +114,7 @@ public class DeviceTreeView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		viewer.setUseHashlookup(true);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		String editorContent = null;
 		IWorkbenchPart workbenchPart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
@@ -193,7 +194,10 @@ public class DeviceTreeView extends ViewPart {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		   IResourceChangeListener listener = new IResourceChangeListener() {
 		      public void resourceChanged(IResourceChangeEvent event) {
-		    	  System.out.println("event: " + event.getType());
+		    	  if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+					  String editorContent = getDeviceTreeEditorContent();
+		    		  viewer.setContentProvider(new ViewContentProvider(editorContent));
+		    	  }
 		      }
 		   };
 		   workspace.addResourceChangeListener(listener, IResourceChangeEvent.PRE_CLOSE | 

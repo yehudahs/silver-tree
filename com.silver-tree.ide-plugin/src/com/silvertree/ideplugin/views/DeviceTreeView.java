@@ -56,49 +56,7 @@ public class DeviceTreeView extends ViewPart {
 	private IWorkbenchPage page; 
 	String currEditorName;
 	 
-	class ViewContentProvider implements ITreeContentProvider {
-		private DeviceTree invisibleRoot;
-		private String _content;
-		
-		public ViewContentProvider(String content) {
-			_content = content;
-		}
-
-		public Object[] getElements(Object parent) {
-			if (parent.equals(getViewSite())) {
-				if (invisibleRoot==null && _content != null) {
-					try {
-						Token tok = new Token(_content, 0, _content.length(), 0, Token.TokenType.TREE);
-						invisibleRoot = new DeviceTreeRoot(tok);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				return getChildren(invisibleRoot);
-			}
-			return getChildren(parent);
-		}
-		public Object getParent(Object child) {
-			if (child instanceof DeviceTree) {
-				return ((DeviceTree)child).getParent();
-			}
-			return null;
-		}
-		public Object [] getChildren(Object parent) {
-			if (parent instanceof DeviceTree) {
-				return ((DeviceTree)parent).getChildren(true);
-			}
-			return new Object[0];
-		}
-		public boolean hasChildren(Object parent) {
-			if (parent instanceof DeviceTree)
-				return ((DeviceTree)parent).hasChildren();
-			return false;
-		}
-
-	}
-
-	class ViewLabelProvider extends LabelProvider {
+	class DeviceTreeLabelProvider extends LabelProvider {
 
 		public String getText(Object obj) {
 			return obj.toString();
@@ -123,9 +81,9 @@ public class DeviceTreeView extends ViewPart {
 			currEditorName = page.getActiveEditor().getEditorInput().getName();
 			editorContent = getDeviceTreeEditorContent();
 		}
-		viewer.setContentProvider(new ViewContentProvider(editorContent));
+		viewer.setContentProvider(new DeviceTreeContentProvider(editorContent));
 		viewer.setInput(getViewSite());
-		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setLabelProvider(new DeviceTreeLabelProvider());
 
 		// Create the help context id for the viewer's control
 		workbench.getHelpSystem().setHelp(viewer.getControl(), "com.quilt.ideplugin.viewer");
@@ -156,7 +114,7 @@ public class DeviceTreeView extends ViewPart {
 					page = partRef.getPage();
 					currEditorName = page.getActiveEditor().getEditorInput().getName();
 					String editorContent = getDeviceTreeEditorContent();
-					viewer.setContentProvider(new ViewContentProvider(editorContent));
+					viewer.setContentProvider(new DeviceTreeContentProvider(editorContent));
 					return;			
 				}
 			}
@@ -196,7 +154,7 @@ public class DeviceTreeView extends ViewPart {
 		      public void resourceChanged(IResourceChangeEvent event) {
 		    	  if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
 					  String editorContent = getDeviceTreeEditorContent();
-		    		  viewer.setContentProvider(new ViewContentProvider(editorContent));
+		    		  viewer.setContentProvider(new DeviceTreeContentProvider(editorContent));
 		    	  }
 		      }
 		   };

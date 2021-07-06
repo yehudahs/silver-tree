@@ -14,8 +14,6 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import com.silvertree.ideplugin.common.DeviceTree;
 import com.silvertree.ideplugin.common.DeviceTreeObject;
-import com.silvertree.ideplugin.common.DeviceTreeRoot;
-import com.silvertree.ideplugin.common.Token;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
 
 import org.eclipse.jface.viewers.*;

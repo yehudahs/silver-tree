@@ -10,11 +10,19 @@
       </category>
       <view
             id="com.silvertree.ideplugin.views.DeviceTreeView"
-            name="Device Tree View"
+            name="Device Tree"
             icon="icons/sample.png"
             class="com.silvertree.ideplugin.views.DeviceTreeView"
             category="com.silver-tree.ide-plugin"
             inject="true">
+      </view>
+      <view
+            category="com.silver-tree.ide-plugin"
+            class="com.silvertree.ideplugin.views.MemoryView"
+            icon="icons/sample.png"
+            id="com.silvertree.ideplugin.views.MemoryView"
+            inject="true"
+            name="Memory Map">
       </view>
    </extension>
    <extension

@@ -11,6 +11,7 @@ public class DeviceTreeRoot extends DeviceTree {
 			root.setChildrenParent();
 			
 			root.processMemMapsRec();
+			root.processNonMemMapsRec();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

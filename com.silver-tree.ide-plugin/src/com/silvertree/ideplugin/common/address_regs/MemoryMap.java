@@ -1,14 +1,13 @@
-package com.silvertree.ideplugin.common;
+package com.silvertree.ideplugin.common.address_regs;
 
-public class Reg {
-	
-	private String _address;
+public class MemoryMap extends Reg{
+
 	private String _length;
-
-	public Reg(String[] allRegs, int addr_cells_from, int addr_cells_to, int size_cells_from,
+	
+	public MemoryMap(String[] allRegs, int addr_cells_from, int addr_cells_to, int size_cells_from,
 			int size_cells_to) {
 		
-		_address = "";
+		super("");
 		while(addr_cells_from <= addr_cells_to) {
 			_address += allRegs[addr_cells_from].replace("0x", "");
 			addr_cells_from++;
@@ -22,11 +21,7 @@ public class Reg {
 		}
 		_length = "0x" + _length;
 	}
-
-	public String get_address() {
-		return _address;
-	}
-
+	
 	public String get_length() {
 		return _length;
 	}

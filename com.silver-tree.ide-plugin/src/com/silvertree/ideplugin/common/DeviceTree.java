@@ -5,12 +5,15 @@ import java.util.Collections;
 
 import com.silvertree.ideplugin.common.Token.AttributeType;
 import com.silvertree.ideplugin.common.Token.TokenType;
+import com.silvertree.ideplugin.common.address_regs.MemoryMap;
+import com.silvertree.ideplugin.common.address_regs.Reg;
 
 public class DeviceTree extends DeviceTreeObject{
 	
 	public ArrayList<DeviceTreeObject> children;
 	private DeviceTreeAttribute _reg;
-	private ArrayList<Reg> _memoryMap;
+	private ArrayList<MemoryMap> _memoryMap;
+	private Reg _nonMemoryMap;
 	private DeviceTreeAttribute _size_cells;
 	private DeviceTreeAttribute _address_cells;
 	
@@ -390,13 +393,13 @@ public class DeviceTree extends DeviceTreeObject{
 
 			int single_register_size = address_cells_length + size_cells_length;
 			int regs_count = regsArr.length / single_register_size;
-			_memoryMap = new ArrayList<Reg>();
+			_memoryMap = new ArrayList<MemoryMap>();
 			for (int reg_idx = 0; reg_idx < regs_count; reg_idx++) {
 				int from_addr_cells = reg_idx * single_register_size;
 				int to_addr_cells = from_addr_cells + address_cells_length - 1;
 				int size_cells_from = to_addr_cells + 1;
 				int size_cells_to = size_cells_from + size_cells_length - 1;
-				Reg reg = new Reg(regsArr, from_addr_cells, to_addr_cells, size_cells_from, size_cells_to);
+				MemoryMap reg = new MemoryMap(regsArr, from_addr_cells, to_addr_cells, size_cells_from, size_cells_to);
 				_memoryMap.add(reg);
 			}
 			
@@ -405,6 +408,21 @@ public class DeviceTree extends DeviceTreeObject{
 		for (DeviceTreeObject tree: getChildren(false)) {
 			if (tree instanceof DeviceTree)
 				((DeviceTree) tree).processMemMapsRec();
+		}
+	}
+	
+	
+	protected void processNonMemMapsRec() {
+		if (hasReg()) {
+			String[] regsArr = getReg().getValue().split(" ");
+			if (regsArr.length == 1)
+				return;
+			_nonMemoryMap = new Reg(regsArr[0]);
+		}
+		
+		for (DeviceTreeObject tree: getChildren(false)) {
+			if (tree instanceof DeviceTree)
+				((DeviceTree) tree).processNonMemMapsRec();
 		}
 	}
 }

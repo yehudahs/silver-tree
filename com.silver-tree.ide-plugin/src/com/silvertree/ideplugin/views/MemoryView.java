@@ -8,7 +8,6 @@ import com.silvertree.ideplugin.common.DeviceTree;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
 
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;

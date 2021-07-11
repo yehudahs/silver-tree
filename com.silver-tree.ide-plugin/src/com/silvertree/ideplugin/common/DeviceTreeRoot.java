@@ -1,7 +1,5 @@
 package com.silvertree.ideplugin.common;
 
-import java.util.ArrayList;
-
 public class DeviceTreeRoot extends DeviceTree {
 	
 	public static DeviceTreeRoot create(Token tok) {

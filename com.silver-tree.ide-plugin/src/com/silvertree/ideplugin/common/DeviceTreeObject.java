@@ -1,7 +1,5 @@
 package com.silvertree.ideplugin.common;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.runtime.IAdaptable;
 
 public abstract class DeviceTreeObject implements IAdaptable{

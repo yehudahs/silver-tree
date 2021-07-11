@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import com.silvertree.ideplugin.common.DeviceTree;
+import com.silvertree.ideplugin.common.DeviceTreeObject;
 import com.silvertree.ideplugin.common.DeviceTreeRoot;
 import com.silvertree.ideplugin.common.Token;
 
@@ -60,60 +62,87 @@ public class parser {
 		try {
 			String content = Files.readString(Paths.get(dtsFile.getPath()), StandardCharsets.UTF_8);
 			Token tok = new Token(content, 0, content.length(), 0, Token.TokenType.TREE);
-			DeviceTreeRoot root = new DeviceTreeRoot(tok);
-			String parserDump = root.dump(0);
-			File inputFile = new File(dtsFile.getParent() + "/input-" + dtsFile.getName());
-			File outputFile = new File(dtsFile.getParent() + "/output" + dtsFile.getName());
-			File preProcOutFile = new File(dtsFile.getPath().replace(".dts", ".tmp"));
-			File preProcMDFile = new File(dtsFile.getPath().replace(".dts", ".pre.tmp"));
-			FileWriter writer = new FileWriter(inputFile);
-			writer.write(parserDump);
-			writer.close();
-			
-			
-			// run the preprocessor
-			// example of cmd run
-			// gcc -E -Wp,-MD,hifive-unmatched-a00.pre.tmp -nostdinc -Iarch/riscv/boot/dts -Iinclude -undef -D__DTS__  -x assembler-with-cpp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp  ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
-			String[] PreProcCmd = {"gcc", 
-					"-E", 
-					"-Wp,-MD," + preProcMDFile.getPath(),
-					"-nostdinc",
-					"-I./samples/include",
-					"-undef", "-D__DTS__",
-					"-x", "assembler-with-cpp",
-					"-o", preProcOutFile.getPath(),
-					dtsFile.getPath(),
-			};
-			CmdProc preProc = new CmdProc(PreProcCmd);
-			if (preProc.returnCode != 0) {
-				inputFile.delete();
-				outputFile.delete();
-				preProcOutFile.delete();
-				preProcMDFile.delete();
-				return preProc;
+			DeviceTreeRoot root = DeviceTreeRoot.create(tok);
+			CmdProc test1 = check_paths(root);
+			if (test1.returnCode != 0) {
+				return test1;
 			}
-
-			//run the dtc
-			//example of running the dtc
-			// dtc -I dts -O dts ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.final
 			
-			String[] cmd = {"dtc", 
-					"-I", "dts", 
-					"-O", "dtb", 
-					"-o", outputFile.toString(), preProcOutFile.getPath()};
-			CmdProc proc = new CmdProc(cmd);
-			
-			inputFile.delete();
-			outputFile.delete();
-			preProcOutFile.delete();
-			preProcMDFile.delete();
-			
-			return proc;
+			CmdProc test2 = check_compile_tree(dtsFile, root);
+			return test2;
 		} catch (Exception e) {
 			System.out.println("got exception working on: " + dtsFile.getPath());
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	private static CmdProc check_paths(DeviceTree root) throws IOException, InterruptedException {
+		CmdProc proc = new CmdProc(null);
+		for (DeviceTreeObject child: root.getChildren(false)) {
+			try {
+				child.getPath();
+			} catch (Exception e) {
+				proc.returnCode = 1;
+				proc.errOut = e.getStackTrace().toString(); 
+			}
+			if (child instanceof DeviceTree) {
+				check_paths((DeviceTree) child);
+			}
+		}
+		proc.returnCode = 0;
+		return proc;
+	}
+
+	private static CmdProc check_compile_tree(File dtsFile, DeviceTreeRoot root) throws IOException, InterruptedException {
+		String parserDump = root.dump(0);
+		File inputFile = new File(dtsFile.getParent() + "/input-" + dtsFile.getName());
+		File outputFile = new File(dtsFile.getParent() + "/output" + dtsFile.getName());
+		File preProcOutFile = new File(dtsFile.getPath().replace(".dts", ".tmp"));
+		File preProcMDFile = new File(dtsFile.getPath().replace(".dts", ".pre.tmp"));
+		FileWriter writer = new FileWriter(inputFile);
+		writer.write(parserDump);
+		writer.close();
+		
+		
+		// run the preprocessor
+		// example of cmd run
+		// gcc -E -Wp,-MD,hifive-unmatched-a00.pre.tmp -nostdinc -Iarch/riscv/boot/dts -Iinclude -undef -D__DTS__  -x assembler-with-cpp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp  ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts
+		String[] PreProcCmd = {"gcc", 
+				"-E", 
+				"-Wp,-MD," + preProcMDFile.getPath(),
+				"-nostdinc",
+				"-I./samples/include",
+				"-undef", "-D__DTS__",
+				"-x", "assembler-with-cpp",
+				"-o", preProcOutFile.getPath(),
+				dtsFile.getPath(),
+		};
+		CmdProc preProc = new CmdProc(PreProcCmd);
+		if (preProc.returnCode != 0) {
+			inputFile.delete();
+			outputFile.delete();
+			preProcOutFile.delete();
+			preProcMDFile.delete();
+			return preProc;
+		}
+
+		//run the dtc
+		//example of running the dtc
+		// dtc -I dts -O dts ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.tmp -o ./arch/riscv/boot/dts/sifive/hifive-unleashed-a00.final
+		
+		String[] cmd = {"dtc", 
+				"-I", "dts", 
+				"-O", "dtb", 
+				"-o", outputFile.toString(), preProcOutFile.getPath()};
+		CmdProc proc = new CmdProc(cmd);
+		
+		inputFile.delete();
+		outputFile.delete();
+		preProcOutFile.delete();
+		preProcMDFile.delete();
+		
+		return proc;
 	}
 
 	public static ArrayList<File> listFilesForFolder(File folder) {

@@ -29,11 +29,14 @@ public class Token implements Comparable<Token> {
 	}
 	
 	public enum AttributeType{
-		None,
+		NONE,
 		SINGLE_LINE_ATTRIBUTE,
 		KEY_VALUE_ATTRIBUTE,
 		KEY_STRING_ATTRIBUTE,
 		KEY_INT_ATTRIBUTE,
+		REG_ATTRIBUTE,
+		ADDRESS_CELLS_ATTRIBUTE,
+		SIZE_CELLS_ATTRIBUTE,
 	}
 	
 	public Token(String text, Integer from, Integer to, Integer identifierPos, TokenType type) {

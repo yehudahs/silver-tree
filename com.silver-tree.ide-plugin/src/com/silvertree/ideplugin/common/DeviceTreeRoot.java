@@ -1,8 +1,23 @@
 package com.silvertree.ideplugin.common;
 
-public class DeviceTreeRoot extends DeviceTree {
+import java.util.ArrayList;
 
-	public DeviceTreeRoot(Token tok) throws Exception {
+public class DeviceTreeRoot extends DeviceTree {
+	
+	public static DeviceTreeRoot create(Token tok) {
+		DeviceTreeRoot root = null;
+		try {
+			root = new DeviceTreeRoot(tok);
+			root.setChildrenParent();
+			
+			root.processMemMapsRec();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return root;
+	}
+
+	private DeviceTreeRoot(Token tok) throws Exception {
 		super(tok);
 	}
 	
@@ -19,5 +34,17 @@ public class DeviceTreeRoot extends DeviceTree {
 	
 	public boolean hasParent() {
 		return false;
+	}
+	
+	public DeviceTree getMemoryTree() {
+		DeviceTree [] trees = getAllSubTreesRec(false);
+		DeviceTree memTree = null;
+		for (DeviceTree tree: trees) {
+			if (tree.getKey().contentEquals("memory")) {
+				memTree = tree;
+				break;
+			}
+		}
+		return memTree;
 	}
 }

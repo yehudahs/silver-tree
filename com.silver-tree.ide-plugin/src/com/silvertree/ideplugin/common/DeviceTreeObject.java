@@ -10,10 +10,7 @@ public abstract class DeviceTreeObject implements IAdaptable{
 	private int _deviceTreeId;
 	private String _key;
 	private String _value;
-	private DeviceTreeObject parent = null;
-	private ArrayList<Integer> _regs;
-	private int _addressCells = -1;
-	private int _sizeCells = -1;
+	private DeviceTree parent = null;
 	
 	private Token _token;
 	
@@ -41,11 +38,11 @@ public abstract class DeviceTreeObject implements IAdaptable{
 	}
 	
 
-	public void setParent(DeviceTreeObject parent) {
+	public void setParent(DeviceTree parent) {
 		this.parent = parent;
 	}
 	
-	public DeviceTreeObject getParent() {
+	public DeviceTree getParent() {
 		return parent;
 	}
 	
@@ -66,56 +63,6 @@ public abstract class DeviceTreeObject implements IAdaptable{
 	public <T> T getAdapter(Class<T> adapter) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	/**
-	 * @return the _addressCells
-	 */
-	public int getAddressCells() {
-		return _addressCells;
-	}
-
-	/**
-	 * @param _addressCells the _addressCells to set
-	 */
-	public void setAddressCells(int _addressCells) {
-		this._addressCells = _addressCells;
-	}
-
-	public Boolean isAddressCellsExists() {
-		return _addressCells != -1;
-	}
-	
-	/**
-	 * @return the _sizeCells
-	 */
-	public int getSizeCells() {
-		return _sizeCells;
-	}
-
-	/**
-	 * @param _sizeCells the _sizeCells to set
-	 */
-	public void setSizeCells(int _sizeCells) {
-		this._sizeCells = _sizeCells;
-	}
-	
-	public Boolean isSizeCellsExists() {
-		return _sizeCells != -1;
-	}
-
-	/**
-	 * @return the _regs
-	 */
-	public ArrayList<Integer> getRegs() {
-		return _regs;
-	}
-
-	/**
-	 * @param _regs the _regs to set
-	 */
-	public void setRegs(ArrayList<Integer> _regs) {
-		this._regs = _regs;
 	}
 
 	/**
@@ -164,9 +111,13 @@ public abstract class DeviceTreeObject implements IAdaptable{
 	
 	public String getPath() {
 		String path = getKey();
-		if (hasParent()) {
-			String parentPath = getParent().getPath();
-			path = parentPath + "-" + path;
+		try {
+			if (hasParent()) {
+				String parentPath = getParent().getPath();
+				path = parentPath + "-" + path;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return path;
 	}
@@ -182,9 +133,12 @@ public abstract class DeviceTreeObject implements IAdaptable{
 		}
 		
 	}
+	
 	@Override
 	public int hashCode() {
 		return getPath().hashCode();
 	}
+
+
 
 }

@@ -11,6 +11,10 @@ public class CmdProc {
 	public int returnCode;
 	
 	public CmdProc(String[] cmd) throws IOException, InterruptedException {
+		if (cmd == null) {
+			return;
+		}
+		
 		for (String word: cmd) {
 			cmdLine += word + " ";
 		}

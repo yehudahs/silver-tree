@@ -3,16 +3,37 @@ package com.silvertree.ideplugin.common;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.silvertree.ideplugin.common.Token.AttributeType;
+import com.silvertree.ideplugin.common.Token.TokenType;
+
 public class DeviceTree extends DeviceTreeObject{
 	
 	public ArrayList<DeviceTreeObject> children;
+	private DeviceTreeAttribute _reg;
+	private ArrayList<Reg> _memoryMap;
+	private DeviceTreeAttribute _size_cells;
+	private DeviceTreeAttribute _address_cells;
 	
-	public DeviceTree(Token tok) throws Exception {
+	public static DeviceTree create(Token tok) {
+		
+		DeviceTree tree = new DeviceTree(tok);
+		try {
+			
+			tree.setChildrenParent();
+			tree.setSpecialAttributes();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("error parsing:\n" + tok);
+		}
+		return tree;
+	}
+	
+	protected DeviceTree(Token tok) {
 		super();
 		setToken(tok);
 		getToken().setType(Token.TokenType.TREE);
 		children = new ArrayList<DeviceTreeObject>();
-		
 		try {
 			parse();
 		} catch (Exception e) {
@@ -21,14 +42,31 @@ public class DeviceTree extends DeviceTreeObject{
 		}
 	}
 	
-
+	protected void setChildrenParent() {
+		for (DeviceTreeObject child: getChildren(false)) {
+			child.setParent(this);
+		}
+	}
+	
+	private void setSpecialAttributes() {
+		for (DeviceTreeObject child: getChildren(false)) {
+			if (child.getToken().getType() == TokenType.ATTRIBUTE) {
+				if (child.getToken().getAttrType() == AttributeType.REG_ATTRIBUTE)
+					_reg = (DeviceTreeAttribute) child;
+				if (child.getToken().getAttrType() == AttributeType.SIZE_CELLS_ATTRIBUTE)
+					_size_cells = (DeviceTreeAttribute) child;
+				if (child.getToken().getAttrType() == AttributeType.ADDRESS_CELLS_ATTRIBUTE)
+					_address_cells = (DeviceTreeAttribute) child;
+			}
+		}
+	}
+	
 	@Override
 	public void parse() throws Exception {
 		if (getToken() == null) return;
 		
 		int textLength = getToken().toString().length();
 		int currPos = 0;
-		int iteration = 0;
 		while(currPos < textLength) {
 			
 			// skip white spaces
@@ -44,7 +82,7 @@ public class DeviceTree extends DeviceTreeObject{
 			Token tok = getNextToken(currPos);
 			switch(tok.getType()) {
 			case TREE:
-				DeviceTree t = new DeviceTree(tok);
+				DeviceTree t = DeviceTree.create(tok);
 				t.setKey(getToken().toString().substring(currPos, getToken().toString().indexOf("{", currPos)));				
 				addChild(t);
 				
@@ -59,8 +97,6 @@ public class DeviceTree extends DeviceTreeObject{
 				currPos = tok.getToOffset();
 				break;
 			}
-			
-			iteration++;
 		}
 	}
 	
@@ -230,7 +266,6 @@ public class DeviceTree extends DeviceTreeObject{
 	
 	public void addChild(DeviceTreeObject child) {
 		children.add(child);
-		child.setParent(this);
 	}
 	public void removeChild(DeviceTreeObject child) {
 		children.remove(child);
@@ -253,40 +288,6 @@ public class DeviceTree extends DeviceTreeObject{
 	}
 	
 	@Override
-	public int getAddressCells() {
-		if (isAddressCellsExists()) {
-			return super.getAddressCells();
-		}else {
-			DeviceTreeObject parent = getParent();
-			while (parent != null && !parent.isAddressCellsExists()) {
-				parent = parent.getParent();
-			}
-			if (parent != null)
-				return parent.getAddressCells();
-			else
-				return super.getAddressCells();
-			
-		}
-	}
-	
-	@Override
-	public int getSizeCells() {
-		if (isSizeCellsExists()) {
-			return super.getSizeCells();	
-		}else {
-			DeviceTreeObject parent = getParent();
-			while (parent != null && !parent.isSizeCellsExists()) {
-				parent = parent.getParent();
-			}
-			if (parent != null)
-				return parent.getSizeCells();
-			else
-				return super.getSizeCells();
-		}
-	}
-
-
-	@Override
 	public String dump(int ident) {
 		var identString = identString(ident);
 		var dumpString = identString;
@@ -304,5 +305,106 @@ public class DeviceTree extends DeviceTreeObject{
 	@Override
 	public boolean isVisible() {
 		return true;
-	}	
+	}
+	
+	
+	public DeviceTree [] getAllSubTreesRec(boolean visibleOnly){
+		ArrayList<DeviceTree> children = new ArrayList<DeviceTree>();
+		for (DeviceTreeObject dto: getChildren(visibleOnly)) {
+			if (dto instanceof DeviceTree) {
+				children.add((DeviceTree) dto);
+				DeviceTree [] subTree = ((DeviceTree) dto).getAllSubTreesRec(visibleOnly);
+				Collections.addAll(children, subTree);
+			}
+		}
+		return (DeviceTree [])children.toArray(new DeviceTree[children.size()]);
+	}
+	
+	public DeviceTree [] getTreesSortedByAddress() {
+		DeviceTree[] treeArr = getAllSubTreesRec(false);
+		ArrayList<DeviceTree> treesWithAddress = new ArrayList<DeviceTree>();
+		for (DeviceTree tree: treeArr) {
+			if (tree.hasReg()) {
+				treesWithAddress.add(tree);
+			}
+		}
+		return (DeviceTree [])treesWithAddress.toArray(new DeviceTree[treesWithAddress.size()]);
+	}
+
+
+	private boolean hasReg() {
+		return getReg() != null;
+	}
+
+
+	public DeviceTreeAttribute getReg() {
+		return _reg;
+	}
+
+	public void setReg(DeviceTreeAttribute attr) {
+		this._reg = attr;
+	}
+
+
+	public boolean hasSizeCells() {
+		return getSizeCells() != null;
+	}
+	
+	public DeviceTreeAttribute getSizeCells() {
+		if (_size_cells == null && hasParent()) 
+			_size_cells = getParent().getSizeCells();
+		return _size_cells;
+	}
+	
+	public void setSizeCells(DeviceTreeAttribute attr) {
+		_size_cells = attr;
+	}
+	
+	public boolean hasAddressCells() {
+		return getAddressCells() != null;
+	}
+
+	public DeviceTreeAttribute getAddressCells() {
+		if (_address_cells == null && hasParent())
+			_address_cells = getParent().getAddressCells();
+		return _address_cells;
+	}
+	
+	public void setAddressCells(DeviceTreeAttribute attr) {
+		_address_cells = attr;
+	}
+	
+	
+	protected void processMemMapsRec() {
+		if (hasReg() && hasAddressCells() && hasSizeCells()) {
+			int	address_cells_length = Integer.decode(getAddressCells().getValue());
+			int	size_cells_length = Integer.decode(getSizeCells().getValue());
+			if (address_cells_length < 1 || size_cells_length < 1)
+				return;
+			
+			String[] regsArr = getReg().getValue().split(" ");
+			// check that we have memory mapped tree and
+			// not Non Memory Mapped or CPU (which has only 1 cell)
+			if (regsArr.length <= 1)
+				return;
+
+			int single_register_size = address_cells_length + size_cells_length;
+			int regs_count = regsArr.length / single_register_size;
+			_memoryMap = new ArrayList<Reg>();
+			for (int reg_idx = 0; reg_idx < regs_count; reg_idx++) {
+				int from_addr_cells = reg_idx * single_register_size;
+				int to_addr_cells = from_addr_cells + address_cells_length - 1;
+				int size_cells_from = to_addr_cells + 1;
+				int size_cells_to = size_cells_from + size_cells_length - 1;
+				Reg reg = new Reg(regsArr, from_addr_cells, to_addr_cells, size_cells_from, size_cells_to);
+				_memoryMap.add(reg);
+			}
+			
+		}
+		
+		for (DeviceTreeObject tree: getChildren(false)) {
+			if (tree instanceof DeviceTree)
+				((DeviceTree) tree).processMemMapsRec();
+		}
+	}
 }

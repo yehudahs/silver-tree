@@ -1,5 +1,6 @@
 package com.silvertree.ideplugin.common;
 
+import com.silvertree.ideplugin.common.Token.AttributeType;
 import com.silvertree.ideplugin.common.Token.TokenType;
 
 public class DeviceTreeAttribute extends DeviceTreeObject {
@@ -16,47 +17,59 @@ public class DeviceTreeAttribute extends DeviceTreeObject {
 	}
 	
 	public void parse() {
-		//there are 2 kinds of Sentences:
-		//1. key-value
-		//2. includes
+		// this needs to be first
+		parseAttributeType();
 		
-		int isKeyValue = getToken().toString().indexOf("=");
-		if (isKeyValue == -1) {
-			// we found an attribute sentence.
-			getToken().setAttrType(Token.AttributeType.SINGLE_LINE_ATTRIBUTE);
+		setKeyAndVal();
+		
+		switch (getToken().getAttrType()) {
+		case ADDRESS_CELLS_ATTRIBUTE:
+			String addrCell = getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")).trim();
+			setValue(addrCell);
+			break;
+		case SIZE_CELLS_ATTRIBUTE:
+			String sizeCells = getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")).trim();
+			setValue(sizeCells);
+			break;
+		case REG_ATTRIBUTE:
+			String regs = getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")).trim();
+			setValue(regs);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void setKeyAndVal() {
+		if (getToken().getAttrType() == AttributeType.SINGLE_LINE_ATTRIBUTE ||
+				getToken().getAttrType() == AttributeType.NONE) {
 			setKey(getToken().toString());
 			setValue(null);
 		}else {
-			// we found a key value sentence.
-			setValue(getToken().toString().substring(isKeyValue + 1, getToken().toString().length()));
-			setKey(getToken().toString().substring(0, isKeyValue));
-
-			int isKeyString = getKey().indexOf("\"", isKeyValue);
-			if (isKeyString == -1) {
-				getToken().setAttrType(Token.AttributeType.KEY_INT_ATTRIBUTE);
-			}else {
-				getToken().setAttrType(Token.AttributeType.KEY_STRING_ATTRIBUTE);
-			}
-			
-			if (getKey().contains("#address-cells")) {
-				int addrCell = Integer.decode(getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")).trim());
-				setAddressCells(addrCell);
-			}else if(getKey().contains("#size-cells")) {
-				int sizeCells = Integer.decode(getValue().substring(getValue().indexOf("<")+1, getValue().indexOf(">")).trim());
-				setSizeCells(sizeCells);
-			}
+			int equalIndex = getToken().toString().indexOf("=");
+			setValue(getToken().toString().substring(equalIndex + 1, getToken().toString().length()));
+			setKey(getToken().toString().substring(0, equalIndex));
 		}
 	}
 	
-	public void setParent(DeviceTreeObject parent) {
+	private void parseAttributeType() {
+		Token tok = getToken();
+		String tokStr = tok.toString();
+		if (tokStr.indexOf("=") == -1) {
+			tok.setAttrType(AttributeType.SINGLE_LINE_ATTRIBUTE);
+		}else if (tokStr.startsWith("#address-cells")) {
+			tok.setAttrType(AttributeType.ADDRESS_CELLS_ATTRIBUTE);
+		}else if(tokStr.startsWith("#size-cells")) {
+			tok.setAttrType(AttributeType.SIZE_CELLS_ATTRIBUTE);
+		}else if(tokStr.startsWith("reg ") || tokStr.startsWith("reg:")) {
+			tok.setAttrType(AttributeType.REG_ATTRIBUTE);
+		}else {
+			tok.setAttrType(AttributeType.NONE);
+		}
+	}
+	
+	public void setParent(DeviceTree parent) {
 		super.setParent(parent);
-		if (isAddressCellsExists()) {
-			getParent().setAddressCells(getAddressCells());
-		}
-		
-		if (isSizeCellsExists()) {
-			getParent().setSizeCells(getSizeCells());
-		}
 	}
 
 	@Override

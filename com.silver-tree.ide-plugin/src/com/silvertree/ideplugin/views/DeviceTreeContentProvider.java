@@ -8,7 +8,7 @@ import com.silvertree.ideplugin.common.Token;
 
 public class DeviceTreeContentProvider implements ITreeContentProvider {
 
-	private DeviceTree invisibleRoot;
+	private DeviceTreeRoot invisibleRoot;
 	private String _content;
 	
 	public DeviceTreeContentProvider(String content) {
@@ -19,7 +19,7 @@ public class DeviceTreeContentProvider implements ITreeContentProvider {
 		if (invisibleRoot==null && _content != null) {
 			try {
 				Token tok = new Token(_content, 0, _content.length(), 0, Token.TokenType.TREE);
-				invisibleRoot = new DeviceTreeRoot(tok);
+				invisibleRoot = DeviceTreeRoot.create(tok);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

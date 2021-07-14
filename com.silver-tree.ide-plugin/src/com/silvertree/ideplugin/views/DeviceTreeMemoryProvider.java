@@ -1,13 +1,16 @@
 package com.silvertree.ideplugin.views;
 
+import java.util.Arrays;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 
-import com.silvertree.ideplugin.common.DeviceTreeRoot;
+import com.silvertree.ideplugin.common.DeviceTreeMemory;
 import com.silvertree.ideplugin.common.Token;
+import com.silvertree.ideplugin.common.address_regs.MemoryMapReg;
 
 public class DeviceTreeMemoryProvider implements IStructuredContentProvider {
 
-	private DeviceTreeRoot invisibleRoot;
+	private DeviceTreeMemory memoryProvider;
 	private String _content;
 	
 	public DeviceTreeMemoryProvider(String content) {
@@ -16,11 +19,13 @@ public class DeviceTreeMemoryProvider implements IStructuredContentProvider {
 	
 	@Override
 	public Object[] getElements(Object inputElement) {
-		if (invisibleRoot==null && _content != null) {
+		if (memoryProvider==null && _content != null) {
 			try {
 				Token tok = new Token(_content, 0, _content.length(), 0, Token.TokenType.TREE);
-				invisibleRoot = DeviceTreeRoot.create(tok);
-				return invisibleRoot.getAllSubTreesRec(false);
+				memoryProvider = new DeviceTreeMemory(tok);
+				MemoryMapReg[] memRegs = memoryProvider.getMemoryMapRegRec();
+				Arrays.sort(memRegs);
+				return memRegs;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

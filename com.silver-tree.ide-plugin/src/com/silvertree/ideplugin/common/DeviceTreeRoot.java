@@ -34,16 +34,5 @@ public class DeviceTreeRoot extends DeviceTree {
 	public boolean hasParent() {
 		return false;
 	}
-	
-	public DeviceTree getMemoryTree() {
-		DeviceTree [] trees = getAllSubTreesRec(false);
-		DeviceTree memTree = null;
-		for (DeviceTree tree: trees) {
-			if (tree.getKey().contentEquals("memory")) {
-				memTree = tree;
-				break;
-			}
-		}
-		return memTree;
-	}
+
 }

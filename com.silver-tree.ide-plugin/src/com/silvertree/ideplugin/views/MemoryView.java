@@ -4,7 +4,7 @@ package com.silvertree.ideplugin.views;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 
-import com.silvertree.ideplugin.common.DeviceTree;
+import com.silvertree.ideplugin.common.address_regs.MemoryMapReg;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
 
 import org.eclipse.jface.viewers.*;
@@ -134,8 +134,8 @@ public class MemoryView extends ViewPart {
         col.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object treeNode) {
-            	if (treeNode instanceof DeviceTree) {
-            		return ((DeviceTree) treeNode).getKey();
+            	if (treeNode instanceof MemoryMapReg) {
+            		return ((MemoryMapReg) treeNode).get_address();
             	}else {
             		return "";
             	}
@@ -147,8 +147,8 @@ public class MemoryView extends ViewPart {
         col.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object treeNode) {
-            	if (treeNode instanceof DeviceTree) {
-            		return ((DeviceTree) treeNode).getKey();
+            	if (treeNode instanceof MemoryMapReg) {
+            		return ((MemoryMapReg) treeNode).get_name();
             	}else {
             		return "";
             	}

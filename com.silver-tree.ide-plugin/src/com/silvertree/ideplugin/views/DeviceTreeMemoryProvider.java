@@ -1,5 +1,6 @@
 package com.silvertree.ideplugin.views;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -9,6 +10,25 @@ import com.silvertree.ideplugin.common.Token;
 import com.silvertree.ideplugin.common.address_regs.MemoryMapReg;
 
 public class DeviceTreeMemoryProvider implements IStructuredContentProvider {
+	
+	public class Address {
+		String _address;
+		String _name;
+		
+		public Address(String address, String name) {
+			_address = address;
+			_name = name;
+		}
+
+		public String get_address() {
+			return _address;
+		}
+
+		public String get_name() {
+			return _name;
+		}
+
+	}
 
 	private DeviceTreeMemory memoryProvider;
 	private String _content;
@@ -23,14 +43,24 @@ public class DeviceTreeMemoryProvider implements IStructuredContentProvider {
 			try {
 				Token tok = new Token(_content, 0, _content.length(), 0, Token.TokenType.TREE);
 				memoryProvider = new DeviceTreeMemory(tok);
-				MemoryMapReg[] memRegs = memoryProvider.getMemoryMapRegRec();
-				Arrays.sort(memRegs);
-				return memRegs;
+				Address[] mem_ranges = generateMemoryMap();
+				return mem_ranges;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		return new Object[0];
+	}
+	
+	private Address[] generateMemoryMap() {
+		MemoryMapReg[] device_tree_mem_map = memoryProvider.getDeviceTreeMemoryMapRegRec();
+		Arrays.sort(device_tree_mem_map);
+		ArrayList<Address> mem_ranges = new ArrayList<Address>();
+		for (MemoryMapReg mem_range: device_tree_mem_map) {
+			mem_ranges.add(new Address(mem_range.get_address(), mem_range.get_name()));
+			mem_ranges.add(new Address(mem_range.get_end_address(), mem_range.get_name()));
+		}
+		return (Address[]) mem_ranges.toArray(new Address[mem_ranges.size()]);
 	}
 
 }

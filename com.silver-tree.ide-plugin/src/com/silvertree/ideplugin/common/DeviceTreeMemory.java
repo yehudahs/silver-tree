@@ -33,7 +33,7 @@ public class DeviceTreeMemory {
 
 	}
 
-	public MemoryMapReg[] getMemoryMapRegRec() {
+	public MemoryMapReg[] getDeviceTreeMemoryMapRegRec() {
 		ArrayList<MemoryMapReg> memRegs = new ArrayList<MemoryMapReg>();
 		for (DeviceTreeObject child : _root.getAllSubTreesRec(false)) {
 			if (child instanceof DeviceTree && ((DeviceTree) child).hasMemoryMapReg()
@@ -50,5 +50,4 @@ public class DeviceTreeMemory {
 		}
 		return false;
 	}
-
 }

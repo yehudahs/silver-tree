@@ -133,9 +133,9 @@ public class MemoryView extends ViewPart {
         TableViewerColumn col = createTableViewerColumn(titles[0], bounds[0], 0);
         col.setLabelProvider(new ColumnLabelProvider() {
             @Override
-            public String getText(Object treeNode) {
-            	if (treeNode instanceof MemoryMapReg) {
-            		return ((MemoryMapReg) treeNode).get_address();
+            public String getText(Object addr) {
+            	if (addr instanceof DeviceTreeMemoryProvider.Address) {
+            		return ((DeviceTreeMemoryProvider.Address) addr).get_address();
             	}else {
             		return "";
             	}
@@ -146,9 +146,9 @@ public class MemoryView extends ViewPart {
         col = createTableViewerColumn(titles[1], bounds[1], 1);
         col.setLabelProvider(new ColumnLabelProvider() {
             @Override
-            public String getText(Object treeNode) {
-            	if (treeNode instanceof MemoryMapReg) {
-            		return ((MemoryMapReg) treeNode).get_name();
+            public String getText(Object addr) {
+            	if (addr instanceof DeviceTreeMemoryProvider.Address) {
+            		return ((DeviceTreeMemoryProvider.Address) addr).get_name();
             	}else {
             		return "";
             	}

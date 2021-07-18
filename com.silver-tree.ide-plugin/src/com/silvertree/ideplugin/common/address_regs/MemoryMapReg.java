@@ -25,6 +25,13 @@ public class MemoryMapReg extends Reg implements Comparable<MemoryMapReg>{
 	public String get_length() {
 		return _length;
 	}
+	
+	public String get_end_address() {
+		Long start_addr = Long.decode(get_address());
+		Long length = Long.decode(get_length());
+		Long end_addr = start_addr + length - 1;
+		return "0x" + Long.toHexString(end_addr);
+	}
 
 	@Override
 	public int compareTo(MemoryMapReg o) {

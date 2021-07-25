@@ -86,7 +86,7 @@ public class DeviceTreeView extends ViewPart {
 		// Create the help context id for the viewer's control
 		workbench.getHelpSystem().setHelp(viewer.getControl(), "com.quilt.ideplugin.viewer");
 		getSite().setSelectionProvider(viewer);
-//		makeActions();
+		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
@@ -205,7 +205,7 @@ public class DeviceTreeView extends ViewPart {
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
-//	private void makeActions() {
+	private void makeActions() {
 //		action1 = new Action() {
 //			public void run() {
 //				showMessage("Action 1 executed");
@@ -225,14 +225,14 @@ public class DeviceTreeView extends ViewPart {
 //		action2.setToolTipText("Action 2 tooltip");
 //		action2.setImageDescriptor(workbench.getSharedImages().
 //				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-//		doubleClickAction = new Action() {
-//			public void run() {
-//				IStructuredSelection selection = viewer.getStructuredSelection();
-//				Object obj = selection.getFirstElement();
-//				navigateToLine((((DeviceTreeObject)obj).getOffsetInEditor()), ((DeviceTreeObject)obj).getToken().toString().length());
-//			}
-//		};
-//	}
+		doubleClickAction = new Action() {
+			public void run() {
+				IStructuredSelection selection = viewer.getStructuredSelection();
+				Object obj = selection.getFirstElement();
+				navigateToLine((((DeviceTreeObject)obj).getOffsetInEditor()), ((DeviceTreeObject)obj).getToken().toString().length());
+			}
+		};
+	}
 	
 	public void navigateToLine(int offset, int length){
 		if (page != null) {

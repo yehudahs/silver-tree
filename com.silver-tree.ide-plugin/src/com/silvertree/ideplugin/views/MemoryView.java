@@ -92,7 +92,7 @@ public class MemoryView extends ViewPart {
 		viewer.setInput(new DeviceTreeMemoryProvider(editorContent));
 //		viewer.setLabelProvider(new ViewLabelProvider());
 		getSite().setSelectionProvider(viewer);
-//		makeActions();
+		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
@@ -232,7 +232,7 @@ public class MemoryView extends ViewPart {
 //		manager.add(action2);
 //	}
 
-//	private void makeActions() {
+	private void makeActions() {
 //		action1 = new Action() {
 //			public void run() {
 //				showMessage("Action 1 executed");
@@ -252,14 +252,14 @@ public class MemoryView extends ViewPart {
 //		action2.setToolTipText("Action 2 tooltip");
 //		action2.setImageDescriptor(workbench.getSharedImages().
 //				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-//		doubleClickAction = new Action() {
-//			public void run() {
-//				IStructuredSelection selection = viewer.getStructuredSelection();
-//				Object obj = selection.getFirstElement();
-//				showMessage("Double-click detected on "+obj.toString());
-//			}
-//		};
-//	}
+		doubleClickAction = new Action() {
+			public void run() {
+				IStructuredSelection selection = viewer.getStructuredSelection();
+				Object obj = selection.getFirstElement();
+				showMessage("Double-click detected on " + obj.toString());
+			}
+		};
+	}
 
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {

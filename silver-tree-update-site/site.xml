@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="SiilverTreeUpdateSite">
+      This is the update site for the silver tree plugin &amp; feature
+   </description>
+   <feature url="features/SilverTreeFeature_1.0.0.202107252302.jar" id="SilverTreeFeature" version="1.0.0.202107252302">
+      <category name="SilverTree"/>
+   </feature>
+   <category-def name="SilverTree" label="SilverTree"/>
+</site>

@@ -3,7 +3,7 @@
    <description name="SiilverTreeUpdateSite">
       This is the update site for the silver tree plugin &amp; feature
    </description>
-   <feature url="features/SilverTreeFeature_1.0.0.202107252302.jar" id="SilverTreeFeature" version="1.0.0.202107252302">
+   <feature url="features/SilverTreeFeature_1.0.0.202107302030.jar" id="SilverTreeFeature" version="1.0.0.202107302030">
       <category name="SilverTree"/>
    </feature>
    <category-def name="SilverTree" label="SilverTree"/>

@@ -11,7 +11,7 @@
       <view
             id="com.silvertree.ideplugin.views.DeviceTreeView"
             name="Device Tree"
-            icon="icons/devicetree-logo.png"
+            icon="icons/devicetree-logo16x16.png"
             class="com.silvertree.ideplugin.views.DeviceTreeView"
             category="com.silver-tree.ide-plugin"
             inject="true">
@@ -19,7 +19,7 @@
       <view
             category="com.silver-tree.ide-plugin"
             class="com.silvertree.ideplugin.views.MemoryView"
-            icon="icons/devicetree-logo.png"
+            icon="icons/devicetree-logo16x16.png"
             id="com.silvertree.ideplugin.views.MemoryView"
             inject="true"
             name="Memory Map">
@@ -31,7 +31,7 @@
             class="com.silvertree.ideplugin.editors.DeviceTreeEditor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             extensions="dts"
-            icon="icons/devicetree-logo.png"
+            icon="icons/devicetree-logo16x16.png"
             id="com.silvertree.ideplugin.editors.DeviceTreeEditor"
             name="Device Tree Editor">
       </editor>

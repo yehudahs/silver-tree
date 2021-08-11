@@ -4,7 +4,7 @@ package com.silvertree.ideplugin.views;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 
-import com.silvertree.ideplugin.common.address_regs.MemoryMapReg;
+import silver.leaves.regs.*;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
 
 import org.eclipse.jface.viewers.*;

@@ -12,8 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
-import com.silvertree.ideplugin.common.DeviceTree;
-import com.silvertree.ideplugin.common.DeviceTreeObject;
+import silver.leaves.tree.*;
 import com.silvertree.ideplugin.editors.DeviceTreeEditor;
 
 import org.eclipse.jface.viewers.*;

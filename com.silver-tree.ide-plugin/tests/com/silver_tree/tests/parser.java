@@ -9,10 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import com.silvertree.ideplugin.common.DeviceTree;
-import com.silvertree.ideplugin.common.DeviceTreeObject;
-import com.silvertree.ideplugin.common.DeviceTreeRoot;
-import com.silvertree.ideplugin.common.Token;
+import silver.leaves.tree.DeviceTree;
+import silver.leaves.tree.DeviceTreeObject;
+import silver.leaves.tree.DeviceTreeRoot;
+import silver.leaves.tree.Token;
 
 public class parser {
 

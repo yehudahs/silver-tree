@@ -2,9 +2,9 @@ package com.silvertree.ideplugin.views;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
-import com.silvertree.ideplugin.common.DeviceTree;
-import com.silvertree.ideplugin.common.DeviceTreeRoot;
-import com.silvertree.ideplugin.common.Token;
+import silver.leaves.tree.DeviceTree;
+import silver.leaves.tree.DeviceTreeRoot;
+import silver.leaves.tree.Token;
 
 public class DeviceTreeContentProvider implements ITreeContentProvider {
 

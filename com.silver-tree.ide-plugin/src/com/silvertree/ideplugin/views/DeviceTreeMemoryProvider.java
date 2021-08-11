@@ -5,9 +5,9 @@ import java.util.Arrays;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 
-import com.silvertree.ideplugin.common.DeviceTreeMemory;
-import com.silvertree.ideplugin.common.Token;
-import com.silvertree.ideplugin.common.address_regs.MemoryMapReg;
+import silver.leaves.regs.MemoryMapReg;
+import silver.leaves.tree.DeviceTreeMemory;
+import silver.leaves.tree.Token;
 
 public class DeviceTreeMemoryProvider implements IStructuredContentProvider {
 	
